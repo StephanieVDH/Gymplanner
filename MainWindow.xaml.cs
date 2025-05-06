@@ -11,14 +11,21 @@ using System.Windows.Shapes;
 
 namespace Gymplanner
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Login_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Show login dialog
+        }
+
+        private void UserProfile_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Navigate to user profile
         }
     }
 }
