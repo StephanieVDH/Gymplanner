@@ -23,20 +23,45 @@ namespace Gymplanner.Windows
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            string email = EmailTextBox.Text;
+            string email = EmailTextBox.Text.Trim();
             string password = PasswordBox.Password;
 
-            // TODO: Validate credentials against database
-            // If valid, open MainWindow and close this window
-            // var main = new MainWindow();
-            // main.Show();
-            // this.Close();
+            if (email == "")
+            {
+                MessageBox.Show("Please enter your email.");
+                return;
+            }
+
+            if (password == "")
+            {
+                MessageBox.Show("Please enter your password.");
+                return;
+            }
+
+            var db = new Data();
+            string? storedHash = db.GetPasswordHash(email);
+
+            if (storedHash == null)
+            {
+                MessageBox.Show("Oops, looks like you don't have an account yet.");
+                return;
+            }
+
+            bool valid = BCrypt.Net.BCrypt.Verify(password, storedHash);
+            if (!valid)
+            {
+                MessageBox.Show("Invalid password.");
+                return;
+            }
+
+            var main = new MainWindow();
+            main.Show();
+            this.Close();
         }
 
         private void Register_Click(object sender, RoutedEventArgs e)
         {
             var registerWin = new RegisterWindow();
-            //registerWin.Owner = this;   deze eruit laten om login window te laten sluiten bij openen van register window
             registerWin.Show();
             this.Close();
         }

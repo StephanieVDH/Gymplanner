@@ -25,11 +25,14 @@ namespace Gymplanner.Windows
 
         private void SignUpButton_Click(object sender, RoutedEventArgs e)
         {
+            string plain = PasswordBox.Password;
+            string hashed = BCrypt.Net.BCrypt.HashPassword(plain); // Package moet je nog installeren  (BCrypt.Net-Next)
+
             var user = new User
             {
                 Username = UserNameTextBox.Text.Trim(),
                 Email = EmailTextBox.Text.Trim(),
-                PasswordHash = PasswordBox.Password, // TODO: Hash the password
+                PasswordHash = hashed,
                 //DateOfBirth = DobPicker.SelectedDate.HasValue
                  //        ? DateOnly.FromDateTime(DobPicker.SelectedDate.Value):null
             };

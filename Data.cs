@@ -46,5 +46,21 @@ namespace Gymplanner
             return this.Insert(query);
         }
 
+        public string? GetPasswordHash(string email)
+        {
+            string query =
+                $"SELECT password_hash " +
+                $"FROM users " +
+                $"WHERE email = '{email}' " +
+                $"LIMIT 1;";
+
+            using var conn = new MySqlConnection(connectionString);
+            using var cmd = new MySqlCommand(query, conn);
+
+            conn.Open();
+            var result = cmd.ExecuteScalar();
+            return result as string;   
+        }
+
     }
 }
