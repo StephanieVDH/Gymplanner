@@ -47,7 +47,12 @@
                    </Style>
                </ItemsControl.ItemContainerStyle>
 
-               <!-- Quote Section -->
+                <!-- Wizard nog van plaats veranderen. Dit is om te testen -->
+                <Button Content="Start Workout Wizard"
+                 Click="StartWizard_Click"
+                 Margin="16"/>
+
+                <!-- Quote Section -->
                <TextBlock Text="“QUOTE”"
                           FontSize="28"
                           FontStyle="Italic"

@@ -1,0 +1,25 @@
+﻿<UserControl 
+    x:Class="Gymplanner.Wizard.FocusQuestionControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Height="Auto" Width="Auto">
+    <StackPanel Margin="16" VerticalAlignment="Top">
+        <TextBlock 
+        Text="Which area do you want to focus on?" 
+        FontSize="18" FontWeight="Bold" 
+        Margin="0,0,0,12"/>
+        <Button Content="Upper body"
+            Command="{Binding SelectFocusCommand}"
+            CommandParameter="Upper body"
+            Margin="0,4"/>
+        <Button Content="Lower body"
+            Command="{Binding SelectFocusCommand}"
+            CommandParameter="Lower body"
+            Margin="0,4"/>
+        <Button Content="Full body"
+            Command="{Binding SelectFocusCommand}"
+            CommandParameter="Full body"
+            Margin="0,4"/>
+    </StackPanel>
+</UserControl>
+

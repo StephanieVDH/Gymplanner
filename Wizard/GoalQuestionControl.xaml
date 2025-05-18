@@ -1,0 +1,25 @@
+﻿<UserControl 
+    x:Class="Gymplanner.Wizard.GoalQuestionControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Height="Auto" Width="Auto">
+    <StackPanel Margin="16" VerticalAlignment="Top">
+        <TextBlock 
+        Text="What’s your goal?" 
+        FontSize="18" FontWeight="Bold" 
+        Margin="0,0,0,12"/>
+        <Button Content="Lose weight"
+            Command="{Binding SelectGoalCommand}"
+            CommandParameter="Lose weight"
+            Margin="0,4"/>
+        <Button Content="Improve condition"
+            Command="{Binding SelectGoalCommand}"
+            CommandParameter="Improve condition"
+            Margin="0,4"/>
+        <Button Content="Build muscle"
+            Command="{Binding SelectGoalCommand}"
+            CommandParameter="Build muscle"
+            Margin="0,4"/>
+    </StackPanel>
+</UserControl>
+

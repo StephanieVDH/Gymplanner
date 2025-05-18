@@ -42,7 +42,8 @@ namespace Gymplanner.Windows
             if (newId > 0)
             {
                 // success → open main
-                new MainWindow().Show();
+                var main = new MainWindow();
+                main.Show();
                 this.Close();
             }
             else

@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Gymplanner;
+using Gymplanner.Wizard;
 
 namespace Gymplanner.Windows
 {
@@ -29,6 +30,20 @@ namespace Gymplanner.Windows
         private void UserProfile_Click(object sender, RoutedEventArgs e)
         {
             // TODO: Navigate to user profile
+        }
+
+        private void StartWizard_Click(object sender, RoutedEventArgs e)
+        {
+            // Optionally hide the main window:
+            // this.Hide();
+
+            var wizard = new WizardWindow();
+            wizard.Owner = this;             // sets MainWindow as the owner
+            wizard.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            wizard.ShowDialog();             // modal
+
+            // After wizard closes, you can Show() or Close() this again:
+            // this.Show();
         }
     }
 }
