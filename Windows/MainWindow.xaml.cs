@@ -8,8 +8,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Gymplanner;
 
-namespace Gymplanner
+namespace Gymplanner.Windows
 {
     public partial class MainWindow : Window
     {
@@ -20,7 +21,9 @@ namespace Gymplanner
 
         private void Login_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Show login dialog
+            var loginWin = new LoginWindow(); // creëert nieuw login window
+            loginWin.Owner = this;
+            loginWin.ShowDialog(); // toont het login window
         }
 
         private void UserProfile_Click(object sender, RoutedEventArgs e)

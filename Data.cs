@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Gymplanner.CS;
 using MySqlConnector;
 
 namespace Gymplanner
@@ -35,6 +36,14 @@ namespace Gymplanner
                 Console.WriteLine(ex.Message);
             }
             return -1;
+        }
+
+        // Users:
+        public int InsertUser(User user)
+        {
+            string query = $"INSERT INTO users (id, username, email, password_hash) " +
+                           $"VALUES (NULL,'{user.Username}', '{user.Email}', '{user.PasswordHash}');";
+            return this.Insert(query);
         }
 
     }

@@ -12,28 +12,33 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Gymplanner
+namespace Gymplanner.Windows
 {
-    public partial class RegisterWindow : Window
+    public partial class LoginWindow : Window
     {
-        public RegisterWindow()
+        public LoginWindow()
         {
             InitializeComponent();
         }
 
-        private void SignUpButton_Click(object sender, RoutedEventArgs e)
+        private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            string name = NameTextBox.Text;
             string email = EmailTextBox.Text;
             string password = PasswordBox.Password;
-            DateTime? dob = DobPicker.SelectedDate;
 
-            // TODO: Validate inputs
-            // TODO: Insert new user into database
-            // If successful, perhaps open MainWindow:
+            // TODO: Validate credentials against database
+            // If valid, open MainWindow and close this window
             // var main = new MainWindow();
             // main.Show();
             // this.Close();
+        }
+
+        private void Register_Click(object sender, RoutedEventArgs e)
+        {
+            var registerWin = new RegisterWindow();
+            //registerWin.Owner = this;   deze eruit laten om login window te laten sluiten bij openen van register window
+            registerWin.Show();
+            this.Close();
         }
     }
 }
