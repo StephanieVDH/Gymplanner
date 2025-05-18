@@ -61,9 +61,38 @@
         </ItemsControl>
 
         <!-- Question content -->
-        <ContentControl Content="{Binding CurrentStep}" Margin="0,24"/>
+		<!-- new: ContentControl with Style+DataTriggers -->
+		<ContentControl Content="{Binding CurrentStep}" Margin="0,24">
+			<ContentControl.Style>
+				<Style TargetType="ContentControl">
+					<!-- default fallback -->
+					<Setter Property="ContentTemplate" Value="{StaticResource LevelTemplate}"/>
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:Questions.Level}">
+							<Setter Property="ContentTemplate" Value="{StaticResource LevelTemplate}"/>
+						</DataTrigger>
+						<DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:Questions.Goal}">
+							<Setter Property="ContentTemplate" Value="{StaticResource GoalTemplate}"/>
+						</DataTrigger>
+						<DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:Questions.Sessions}">
+							<Setter Property="ContentTemplate" Value="{StaticResource SessionsTemplate}"/>
+						</DataTrigger>
+						<DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:Questions.Duration}">
+							<Setter Property="ContentTemplate" Value="{StaticResource DurationTemplate}"/>
+						</DataTrigger>
+						<DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:Questions.Focus}">
+							<Setter Property="ContentTemplate" Value="{StaticResource FocusTemplate}"/>
+						</DataTrigger>
+						<DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:Questions.FocusMuscles}">
+							<Setter Property="ContentTemplate" Value="{StaticResource FocusMusclesTemplate}"/>
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</ContentControl.Style>
+		</ContentControl>
 
-        <!-- Navigation buttons -->
+
+		<!-- Navigation buttons -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
             <Button Content="←" Command="{Binding PrevCommand}" Margin="0,0,8,0"/>
             <Button Content="→" Command="{Binding NextCommand}"/>
