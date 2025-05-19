@@ -42,6 +42,14 @@
                          Height="30"
                          Margin="0,0,0,12" />
 
+            <!-- Confirm Password -->
+            <TextBlock Text="CONFIRM PASSWORD"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,4" />
+            <PasswordBox Name="ConfirmPasswordBox"
+                         Height="30"
+                         Margin="0,0,0,12" />
+            
             <!-- Date of Birth 
             <TextBlock Text="DATE OF BIRTH"
                        FontWeight="SemiBold"
