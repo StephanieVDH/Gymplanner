@@ -53,7 +53,7 @@
                  Margin="16"/>
 
                 <!-- Quote Section -->
-               <TextBlock Text="“QUOTE”"
+                <TextBlock Text="Make your personalised gymplanner in 5 min!"
                           FontSize="28"
                           FontStyle="Italic"
                           Margin="0,10"/>
@@ -68,10 +68,15 @@
                           FontSize="24"
                           FontWeight="Bold"
                           Margin="0,20,0,5"/>
-               <Border Height="150"
-                       Background="#FFD3D3D3"/>
+               
+                <TextBlock Text="It's pretty easy, you make an account by clicking on Login and fill in your info. After that you get to the page where we ask you some important questions to make your personalised gym planning. So, what are you waiting for? Let's get started!"
+                       TextWrapping="Wrap"
+                       FontSize="18"
+                       Margin="0,10,0,10"
+                       Height="Auto"/>
 
-               <!-- About Us -->
+
+                <!-- About Us -->
                <TextBlock Text="ABOUT US"
                           FontSize="24"
                           FontWeight="Bold"
@@ -82,12 +87,14 @@
                        <ColumnDefinition Width="3*"/>
                    </Grid.ColumnDefinitions>
 
-                   <!-- About Text Placeholder -->
-                   <Border Grid.Column="0"
-                           Height="120"
-                           Background="#FFD3D3D3"/>
+                    <TextBlock Text="We are two women in our 20s with a shared passion for fitness and wellness. After years of building our own workout routines and tracking progress, we created this gym planner to help others stay organized, motivated, and consistent in reaching their goals. Our mission is to make fitness planning simple, effective, and accessible for everyone."
+                               TextWrapping="Wrap"
+                               FontSize="16"
+                               Margin="0,10,0,10"
+                               Height="Auto"/>
 
-                   <!-- About Image Placeholder -->
+
+                    <!-- About Image Placeholder -->
                    <Image Grid.Column="1"
                           Source="/Assets/about_placeholder.png"
                           Height="120"
