@@ -6,48 +6,81 @@
         <TabControl>
             <!-- Users Management Tab -->
             <TabItem Header="Users">
-                <Grid Margin="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <!-- Action Buttons -->
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <Button x:Name="AddUserButton" Content="Add User" Width="100" Margin="0,0,10,0"/>
-                        <Button x:Name="EditUserButton" Content="Edit User" Width="100" Margin="0,0,10,0"/>
-                        <Button x:Name="DeleteUserButton" Content="Delete User" Width="100"/>
+                <DockPanel Margin="10">
+                    <!-- Header and Add Button -->
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,10">
+                        <TextBlock Text="USER OVERVIEW" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <Button x:Name="AddUserButton" Content="Add user" Padding="10,5" Margin="20,0,0,0"/>
                     </StackPanel>
-                    <!-- Users DataGrid -->
-                    <DataGrid x:Name="UsersDataGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="Auto"/>
-                            <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="*"/>
-                            <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
-                            <DataGridTextColumn Header="Role" Binding="{Binding Role}" Width="Auto"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
+
+                    <!-- User List -->
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="UsersItemsControl" ItemsSource="{Binding Users}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel Margin="0,0,0,20" LastChildFill="False">
+                                        <!-- User Details -->
+                                        <StackPanel Orientation="Vertical" Width="200" DockPanel.Dock="Left">
+                                            <TextBlock Text="{Binding Username}" FontWeight="Bold" FontSize="14"/>
+                                            <TextBlock Text="{Binding Id, StringFormat=ID: {0}}" FontSize="12" Foreground="Gray"/>
+                                            <TextBlock Text="{Binding ActiveSince, StringFormat=Active since: {0:MM-dd-yyyy}}" FontSize="12" Foreground="Gray"/>
+                                        </StackPanel>
+
+                                        <!-- Avatar -->
+                                        <Border Width="40" Height="40" CornerRadius="20" Background="#EEE" Margin="20,0" DockPanel.Dock="Left">
+                                            <Image Source="/Assets/avatar_placeholder.png" Stretch="Uniform"/>
+                                        </Border>
+
+                                        <!-- Actions -->
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                                            <Button Content="Edit user" Padding="8,4" Margin="0,0,10,0"
+                                                    Click="EditUserButton_Click" CommandParameter="{Binding}" />
+                                            <Button Content="Delete user" Padding="8,4"
+                                                    Click="DeleteUserButton_Click" CommandParameter="{Binding}" />
+                                        </StackPanel>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
             </TabItem>
 
             <!-- Exercises Management Tab -->
             <TabItem Header="Exercises">
-                <Grid Margin="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <!-- Add Exercise Button -->
-                    <Button x:Name="AddExerciseButton" Content="Add Exercise" Width="120" HorizontalAlignment="Left" Margin="0,0,0,10"/>
-                    <!-- Exercises DataGrid -->
-                    <DataGrid x:Name="ExercisesDataGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="Auto"/>
-                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
-                            <DataGridTextColumn Header="Muscle Group" Binding="{Binding MuscleGroup}" Width="*"/>
-                            <DataGridTextColumn Header="Difficulty" Binding="{Binding Difficulty}" Width="Auto"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
+                <DockPanel Margin="10">
+                    <!-- Header and Add Button -->
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,10">
+                        <TextBlock Text="EXERCISES" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <Button x:Name="AddExerciseButton" Content="Add new exercise" Padding="10,5" Margin="20,0,0,0"/>
+                    </StackPanel>
+
+                    <!-- Exercise List -->
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="ExercisesItemsControl" ItemsSource="{Binding Exercises}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel Margin="0,0,0,20" LastChildFill="False">
+                                        <!-- Exercise Details -->
+                                        <StackPanel Orientation="Vertical" Width="200" DockPanel.Dock="Left">
+                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="14"/>
+                                            <TextBlock Text="{Binding Difficulty, StringFormat=difficulty: {0}}" FontSize="12" Foreground="Gray"/>
+                                            <TextBlock Text="{Binding MuscleGroup}" FontSize="12" Foreground="Gray"/>
+                                        </StackPanel>
+
+                                        <!-- Actions -->
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                                            <Button Content="Edit exercise" Padding="8,4" Margin="0,0,10,0"
+                                                    Click="EditExerciseButton_Click" CommandParameter="{Binding}" />
+                                            <Button Content="Delete exercise" Padding="8,4"
+                                                    Click="DeleteExerciseButton_Click" CommandParameter="{Binding}" />
+                                        </StackPanel>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
             </TabItem>
         </TabControl>
     </Grid>
