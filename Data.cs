@@ -39,6 +39,7 @@ namespace Gymplanner
         }
 
         // Users:
+        // 1. Registreren 
         public int InsertUser(User user)
         {
             string query = $"INSERT INTO users (id, username, email, password_hash) " +
@@ -60,6 +61,32 @@ namespace Gymplanner
             conn.Open();
             var result = cmd.ExecuteScalar();
             return result as string;   
+        }
+
+        //2. User overview voor admin page
+        public List<User> GetUsers()
+        {
+            var list = new List<User>();
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            using var cmd = new MySqlCommand(
+                @"SELECT id, username, email, role, created_at 
+                  FROM users;", conn);
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                list.Add(new User  // dit nog aanpassen
+                {
+                    Id = reader.GetInt32("id"),
+                    Username = reader.GetString("username"),
+                    Email = reader.GetString("email"),
+                    Role = reader.GetString("role"),
+                    ActiveSince = reader.GetDateTime("created_at")
+                });
+            }
+
+            return list;
         }
 
     }
