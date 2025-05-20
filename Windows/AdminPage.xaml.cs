@@ -9,7 +9,7 @@ namespace Gymplanner.Views
         private readonly Data _dataService = new Data();
 
         public ObservableCollection<User> Users { get; }
-        public ObservableCollection<Exercise> Exercises { get; }  // HIER NOG APARTE CS FILE VOOR MAKEN
+        public ObservableCollection<Exercise> Exercises { get; } 
 
         public AdminPage()
         {
@@ -63,7 +63,7 @@ namespace Gymplanner.Views
                 MessageBox.Show($"Delete {u.Username}?", "Confirm",
                     MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                if (_dataService.DeleteUser(u.Id))
+                if (_dataService.DeleteUser(u.ID))
                     LoadUsers();
             }
         }
@@ -91,7 +91,7 @@ namespace Gymplanner.Views
                 MessageBox.Show($"Delete {ex.Name}?", "Confirm",
                     MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                if (_dataService.DeleteExercise(ex.Id))
+                if (_dataService.DeleteExercise(ex.ID))
                     LoadExercises();
             }
         }
