@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using Gymplanner;
 using Gymplanner.CS;
 
-namespace Gymplanner.Views
+namespace Gymplanner.Windows
 {
     public partial class UserDialog : Window
     {

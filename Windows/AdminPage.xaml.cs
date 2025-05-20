@@ -2,7 +2,7 @@
 using System.Windows;
 using Gymplanner.CS;    
 using Gymplanner;      
-namespace Gymplanner.Views
+namespace Gymplanner.Windows
 {
     public partial class AdminPage : Window
     {
