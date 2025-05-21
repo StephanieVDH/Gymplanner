@@ -13,6 +13,9 @@ namespace Gymplanner.CS
         public string Email { get; set; }
         public string PasswordHash { get; set; }
         //public DateOnly? DateOfBirth { get; set; }
+        public string Role { get; set; } = "user"; // Default role is 'user'
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now; // Default to current date and time
 
         public User() { }
 
