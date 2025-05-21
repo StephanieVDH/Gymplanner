@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Gymplanner.CS;
 using Gymplanner;
+using System.Text.RegularExpressions;
 
 namespace Gymplanner.Windows
 {
@@ -25,38 +26,74 @@ namespace Gymplanner.Windows
 
         private void SignUpButton_Click(object sender, RoutedEventArgs e)
         {
-            string plain = PasswordBox.Password;
-            string hashed = BCrypt.Net.BCrypt.HashPassword(plain); // Package moet je nog installeren  (BCrypt.Net-Next)
+                // === Validation Logic ===
+                if (!ValidateEmail(EmailTextBox.Text))
+                {
+                    MessageBox.Show("Please enter a valid email address (must contain '@').", "Invalid Email", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
 
-            var user = new User
-            {
-                Username = UserNameTextBox.Text.Trim(),
-                Email = EmailTextBox.Text.Trim(),
-                PasswordHash = hashed,
-                //DateOfBirth = DobPicker.SelectedDate.HasValue
-                 //        ? DateOnly.FromDateTime(DobPicker.SelectedDate.Value):null
-            };
+                if (!ValidatePassword(PasswordBox.Password))
+                {
+                    MessageBox.Show("Password must be at least 8 characters long and include at least one number.", "Invalid Password", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
 
-            var db = new Data();
-            int newId = db.InsertUser(user);
-            if (newId > 0)
-            {
-                // success → open main
-                var main = new MainWindow();
-                main.Show();
-                this.Close();
+                if (PasswordBox.Password != ConfirmPasswordBox.Password)
+                {
+                    MessageBox.Show("Passwords do not match.", "Password Mismatch", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                // === Hash password and create user ===
+                string plain = PasswordBox.Password;
+                string hashed = BCrypt.Net.BCrypt.HashPassword(plain);
+
+                var user = new User
+                {
+                    Username = UserNameTextBox.Text.Trim(),
+                    Email = EmailTextBox.Text.Trim(),
+                    PasswordHash = hashed,
+                };
+
+                // === Insert into database ===
+                var db = new Data();
+                int newId = db.InsertUser(user);
+
+                if (newId > 0)
+                {
+                    var main = new MainWindow();
+                    main.Show();
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Registration failed—please try again.");
+                }
             }
-            else
+
+            // === Regex Validation Methods ===
+            private bool ValidateEmail(string email)
             {
-                MessageBox.Show("Registration failed—please try again.");
+                string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+                return Regex.IsMatch(email, emailPattern);
             }
 
-
-            // TODO: Validate inputs
-            // If successful, perhaps open MainWindow:
-            // var main = new MainWindow();
-            // main.Show();
-            // this.Close();
+            private bool ValidatePassword(string password)
+            {
+                string passwordPattern = @"^(?=.*\d).{8,}$";
+                return Regex.IsMatch(password, passwordPattern);
+            }
         }
     }
-}
+
+
+
+    // TODO: Validate inputs
+    // If successful, perhaps open MainWindow:
+    // var main = new MainWindow();
+    // main.Show();
+    // this.Close();
+
+    
+
