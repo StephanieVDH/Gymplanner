@@ -1,0 +1,88 @@
+﻿<Window x:Class="Gymplanner.Views.AdminPage"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Admin Page" Height="600" Width="900">
+    <Grid Margin="10">
+        <TabControl>
+            <!-- Users Management Tab -->
+            <TabItem Header="Users">
+                <DockPanel Margin="10">
+                    <!-- Header and Add Button -->
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,10">
+                        <TextBlock Text="USER OVERVIEW" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <Button x:Name="AddUserButton" Content="Add user" Padding="10,5" Margin="20,0,0,0"/>
+                    </StackPanel>
+
+                    <!-- User List -->
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="UsersItemsControl" ItemsSource="{Binding Users}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel Margin="0,0,0,20" LastChildFill="False">
+                                        <!-- User Details -->
+                                        <StackPanel Orientation="Vertical" Width="200" DockPanel.Dock="Left">
+                                            <TextBlock Text="{Binding Username}" FontWeight="Bold" FontSize="14"/>
+                                            <TextBlock Text="{Binding Id, StringFormat=ID: {0}}" FontSize="12" Foreground="Gray"/>
+                                            <TextBlock Text="{Binding ActiveSince, StringFormat=Active since: {0:MM-dd-yyyy}}" FontSize="12" Foreground="Gray"/>
+                                        </StackPanel>
+
+                                        <!-- Avatar -->
+                                        <Border Width="40" Height="40" CornerRadius="20" Background="#EEE" Margin="20,0" DockPanel.Dock="Left">
+                                            <Image Source="/Assets/avatar_placeholder.png" Stretch="Uniform"/>
+                                        </Border>
+
+                                        <!-- Actions -->
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                                            <Button Content="Edit user" Padding="8,4" Margin="0,0,10,0"
+                                                    Click="EditUserButton_Click" CommandParameter="{Binding}" />
+                                            <Button Content="Delete user" Padding="8,4"
+                                                    Click="DeleteUserButton_Click" CommandParameter="{Binding}" />
+                                        </StackPanel>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </TabItem>
+
+            <!-- Exercises Management Tab -->
+            <TabItem Header="Exercises">
+                <DockPanel Margin="10">
+                    <!-- Header and Add Button -->
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,10">
+                        <TextBlock Text="EXERCISES" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <Button x:Name="AddExerciseButton" Content="Add new exercise" Padding="10,5" Margin="20,0,0,0"/>
+                    </StackPanel>
+
+                    <!-- Exercise List -->
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="ExercisesItemsControl" ItemsSource="{Binding Exercises}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel Margin="0,0,0,20" LastChildFill="False">
+                                        <!-- Exercise Details -->
+                                        <StackPanel Orientation="Vertical" Width="200" DockPanel.Dock="Left">
+                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="14"/>
+                                            <TextBlock Text="{Binding Difficulty, StringFormat=difficulty: {0}}" FontSize="12" Foreground="Gray"/>
+                                            <TextBlock Text="{Binding MuscleGroup}" FontSize="12" Foreground="Gray"/>
+                                        </StackPanel>
+
+                                        <!-- Actions -->
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                                            <Button Content="Edit exercise" Padding="8,4" Margin="0,0,10,0"
+                                                    Click="EditExerciseButton_Click" CommandParameter="{Binding}" />
+                                            <Button Content="Delete exercise" Padding="8,4"
+                                                    Click="DeleteExerciseButton_Click" CommandParameter="{Binding}" />
+                                        </StackPanel>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
+

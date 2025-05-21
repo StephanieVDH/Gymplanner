@@ -2,17 +2,18 @@
        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
        Title="Gymplanner" Height="834" Width="1000">
-   <Grid>
-       <!-- Define Rows: Header, Content -->
-       <Grid.RowDefinitions>
-           <RowDefinition Height="Auto"/>
-           <RowDefinition Height="*"/>
-       </Grid.RowDefinitions>
+    <Grid>
+        <!-- Define Rows: Header, Content, Footer -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-       <!-- Header -->
-       <DockPanel Grid.Row="0" Background="#FF7B68EE" Height="60" LastChildFill="False">
-           <!-- Logo on the Left -->
-           <Button Content="LOGO"
+        <!-- Header -->
+        <DockPanel Grid.Row="0" Background="#FF7B68EE" Height="60" LastChildFill="False">
+            <!-- Logo on the Left -->
+            <Button Content="LOGO"
                    FontWeight="Bold"
                    Width="100"
                    Height="30"
@@ -20,81 +21,90 @@
                    VerticalAlignment="Center"
                    DockPanel.Dock="Left"/>
 
-           <!-- Login on the Right -->
-           <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Margin="0,0,10,0" VerticalAlignment="Center">
-               <Button Content="LOG IN"
+            <!-- Login on the Right -->
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Margin="0,0,10,0" VerticalAlignment="Center">
+                <Button Content="LOG IN"
                        Width="80"
                        Height="30"
                        Click="Login_Click"/>
-               <Button Width="30" Height="30" Margin="5,0,0,0" Click="UserProfile_Click">
-                   <Image Source="/Assets/user_icon.png" Stretch="Uniform"/>
-               </Button>
-           </StackPanel>
-       </DockPanel>
+                <Button Width="30" Height="30" Margin="5,0,0,0" Click="UserProfile_Click">
+                    <Image Source="/Assets/user_icon.png" Stretch="Uniform"/>
+                </Button>
+            </StackPanel>
+        </DockPanel>
 
-       <!-- Main Content Scrollable -->
-       <ScrollViewer Grid.Row="1">
-           <!-- Replaced StackPanel with ItemsControl to support spacing -->
-           <ItemsControl Margin="20">
-               <ItemsControl.ItemsPanel>
-                   <ItemsPanelTemplate>
-                       <StackPanel/>
-                   </ItemsPanelTemplate>
-               </ItemsControl.ItemsPanel>
-               <ItemsControl.ItemContainerStyle>
-                   <Style>
-                       <Setter Property="FrameworkElement.Margin" Value="0,0,0,20"/>
-                   </Style>
-               </ItemsControl.ItemContainerStyle>
+        <!-- Main Content Scrollable -->
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl Margin="20">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemContainerStyle>
+                    <Style>
+                        <Setter Property="FrameworkElement.Margin" Value="0,0,0,20"/>
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
 
-                <!-- Wizard nog van plaats veranderen. Dit is om te testen -->
                 <Button Content="Start Workout Wizard"
-                 Click="StartWizard_Click"
-                 Margin="16"/>
+                       Click="StartWizard_Click"
+                       Margin="16"/>
 
-                <!-- Quote Section -->
-               <TextBlock Text="“QUOTE”"
+                <TextBlock Text="Make your personalised gymplanner in 5 min!"
                           FontSize="28"
                           FontStyle="Italic"
                           Margin="0,10"/>
 
-               <!-- Banner Image -->
-               <Image Source="/Assets/banner_placeholder.png"
+                <Image Source="/Assets/banner_placeholder.png"
                       Height="200"
                       Stretch="UniformToFill"/>
 
-               <!-- How It Works -->
-               <TextBlock Text="HOW IT WORKS"
+                <TextBlock Text="HOW IT WORKS"
                           FontSize="24"
                           FontWeight="Bold"
                           Margin="0,20,0,5"/>
-               <Border Height="150"
-                       Background="#FFD3D3D3"/>
 
-               <!-- About Us -->
-               <TextBlock Text="ABOUT US"
+                <TextBlock Text="It's pretty easy, you make an account by clicking on Login and fill in your info. After that you get to the page where we ask you some important questions to make your personalised gym planning. So, what are you waiting for? Let's get started!"
+                          TextWrapping="Wrap"
+                          FontSize="18"
+                          Margin="0,10,0,10"
+                          Height="Auto"/>
+
+                <TextBlock Text="ABOUT US"
                           FontSize="24"
                           FontWeight="Bold"
                           Margin="0,20,0,5"/>
-               <Grid>
-                   <Grid.ColumnDefinitions>
-                       <ColumnDefinition Width="2*"/>
-                       <ColumnDefinition Width="3*"/>
-                   </Grid.ColumnDefinitions>
 
-                   <!-- About Text Placeholder -->
-                   <Border Grid.Column="0"
-                           Height="120"
-                           Background="#FFD3D3D3"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
 
-                   <!-- About Image Placeholder -->
-                   <Image Grid.Column="1"
+                    <TextBlock Text="We are two women in our 20s with a shared passion for fitness and wellness. After years of building our own workout routines and tracking progress, we created this gym planner to help others stay organized, motivated, and consistent in reaching their goals. Our mission is to make fitness planning simple, effective, and accessible for everyone."
+                               TextWrapping="Wrap"
+                               FontSize="16"
+                               Margin="0,10,0,10"
+                               Height="Auto"/>
+
+                    <Image Grid.Column="1"
                           Source="/Assets/about_placeholder.png"
                           Height="120"
                           Stretch="UniformToFill"
                           Margin="10,0,0,0"/>
-               </Grid>
-           </ItemsControl>
-       </ScrollViewer>
-   </Grid>
+                </Grid>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Footer  (icoontjes toevoegen)-->
+        <DockPanel Grid.Row="2" Background="#FF7B68EE" Height="40">
+            <TextBlock Text="nr.: 046567983     |     Mail: info@gymplanner.com"
+                      Foreground="White"
+                      VerticalAlignment="Center"
+                      HorizontalAlignment="Center"
+                      FontSize="14"/>
+        </DockPanel>
+    </Grid>
 </Window>
+
