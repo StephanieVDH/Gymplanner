@@ -118,7 +118,6 @@ namespace Gymplanner
 
 
         // EXERCISES:
-        // 1. Exercise overview voor admin page
         public List<Exercise> GetExercises()
         {
             var list = new List<Exercise>();
@@ -147,15 +146,7 @@ namespace Gymplanner
             return list;
         }
 
-        //2. Exercise toevoegen:
-        public int InsertExercise(Exercise exercise)
-        {
-            string query = $"INSERT INTO exercises (id, name, description, muscle_group) " +
-                           $"VALUES (NULL,'{exercise.Name}', '{exercise.Description}', '{exercise.MuscleGroup}');";
-            return this.Insert(query);
-        }
-
-        //3. Exercise verwijderen:
+        //2. Exercise verwijderen:
         public bool DeleteExercise(int exerciseId)
         {
             string sql = $"DELETE FROM exercises WHERE id = {exerciseId};";
