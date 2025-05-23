@@ -146,7 +146,22 @@ namespace Gymplanner
             return list;
         }
 
-        //2. Exercise verwijderen:
+        // Exercise toevoegen:
+        public int InsertExercise(Exercise exercise)
+        {
+            string query =
+                $"INSERT INTO exercises " +
+                $"(id, name, description, muscle_group, difficulty) " +
+                $"VALUES (NULL, " +
+                $"'{exercise.Name}', " +
+                $"'{exercise.Description}', " +
+                $"'{exercise.MuscleGroup}', " +
+                $"'{exercise.Difficulty}');";
+
+            return Insert(query);
+        }
+
+        // Exercise verwijderen:
         public bool DeleteExercise(int exerciseId)
         {
             string sql = $"DELETE FROM exercises WHERE id = {exerciseId};";
