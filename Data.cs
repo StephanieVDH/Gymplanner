@@ -90,7 +90,7 @@ namespace Gymplanner
             conn.Open();
 
             using var cmd = new MySqlCommand(
-                @"SELECT id, username, email, role, created_at 
+                @"SELECT id, username, email, role_id, created_at 
                   FROM users;", conn);
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -123,13 +123,24 @@ namespace Gymplanner
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            using var cmd = new MySqlCommand(
-                @"SELECT 
-              id,
-              name,
-              description,
-              muscle_group
-          FROM exercises;", conn);
+            var sql = @"
+        SELECT 
+            e.id,
+            e.name,
+            e.description,
+            dl.name            AS difficulty,
+            GROUP_CONCAT(mg.name SEPARATOR ', ') AS muscle_groups
+        FROM exercises e
+        JOIN difficulty_levels dl 
+          ON e.difficulty_id = dl.id
+        LEFT JOIN exercise_muscle_groups emg 
+          ON e.id = emg.exercise_id
+        LEFT JOIN muscle_groups mg 
+          ON emg.muscle_group_id = mg.id
+        GROUP BY e.id, e.name, e.description, dl.name;
+    ";
+
+            using var cmd = new MySqlCommand(sql, conn);
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
@@ -137,11 +148,15 @@ namespace Gymplanner
                 {
                     ID = reader.GetInt32("id"),
                     Name = reader.GetString("name"),
-                    Description = reader.GetString("description"),
-                    MuscleGroup = reader.GetString("muscle_group")
+                    Description = reader.IsDBNull(reader.GetOrdinal("description"))
+                                      ? null
+                                      : reader.GetString("description"),
+                    Difficulty = reader.GetString("difficulty"),
+                    MuscleGroup = reader.IsDBNull(reader.GetOrdinal("muscle_groups"))
+                                      ? string.Empty
+                                      : reader.GetString("muscle_groups")
                 });
             }
-
             return list;
         }
 
