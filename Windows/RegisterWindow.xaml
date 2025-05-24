@@ -38,10 +38,26 @@
             <TextBlock Text="PASSWORD"
                        FontWeight="SemiBold"
                        Margin="0,0,0,4" />
-            <PasswordBox Name="PasswordBox"
+            <Grid Height="30" Margin="0,0,0,12">
+                <PasswordBox Name="PasswordBox"
+                             Height="30"
+                             Padding="0,0,30,0"
+                             PasswordChanged="PasswordBox_PasswordChanged" VerticalAlignment="Bottom" />
+                <TextBox Name="PasswordTextBox"
                          Height="30"
-                         Margin="0,0,0,12" />
-
+                         Padding="0,0,30,0"
+                         Visibility="Collapsed"
+                         TextChanged="PasswordTextBox_TextChanged" />
+                <Image Name="PasswordEyeIcon"
+                       Source="/Images/eye icon.jpg"
+                       Width="20"
+                       Height="20"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center"
+                       Margin="0,0,5,0"
+                       Cursor="Hand"
+                       MouseLeftButtonDown="PasswordEyeIcon_Click" />
+            </Grid>
             <!-- Confirm Password -->
             <TextBlock Text="CONFIRM PASSWORD"
                        FontWeight="SemiBold"
@@ -67,5 +83,11 @@
                     FontWeight="SemiBold"
                     Click="SignUpButton_Click" />
         </StackPanel>
+        <Image Source="/Images/Gymplanner_cropped.jpg"
+         Width="100"
+       Height="100"
+       HorizontalAlignment="Left"
+       VerticalAlignment="Top"
+       Margin="10"/>
     </Grid>
 </Window>

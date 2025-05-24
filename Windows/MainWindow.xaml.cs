@@ -45,5 +45,13 @@ namespace Gymplanner.Windows
             // After wizard closes, you can Show() or Close() this again:
             // this.Show();
         }
+
+        private void AdminButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Open as a standalone window
+            var admin = new AdminPage();
+            admin.Owner = this;    // optional: set owner so it stays on top
+            admin.Show();          // or admin.ShowDialog() if you want it modal
+        }
     }
 }

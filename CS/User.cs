@@ -8,12 +8,12 @@ namespace Gymplanner.CS
 {
     public class User
     {
-        public int ID { get; set; } // Moet hier ID? Hoe auto incrementen?
+        public int Id { get; set; } 
         public string Username { get; set; }
         public string Email { get; set; }
         public string PasswordHash { get; set; }
         //public DateOnly? DateOfBirth { get; set; }
-        public string Role { get; set; } = "user"; // Default role is 'user'
+        public string Role { get; set; } 
 
         public DateTime CreatedAt { get; set; } = DateTime.Now; // Default to current date and time
 
@@ -24,7 +24,6 @@ namespace Gymplanner.CS
             Username = username;
             Email = email;
             PasswordHash = passwordhash;
-            //DateOfBirth = dob;
         }
     }
 }
