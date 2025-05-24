@@ -62,27 +62,10 @@
             <TextBlock Text="CONFIRM PASSWORD"
                        FontWeight="SemiBold"
                        Margin="0,0,0,4" />
-            <Grid Height="30" Margin="0,0,0,12">
-                <PasswordBox Name="ConfirmPasswordBox"
-                             Height="30"
-                             Padding="0,0,30,0"
-                             PasswordChanged="ConfirmPasswordBox_PasswordChanged" Password="" />
-                <TextBox Name="ConfirmPasswordTextBox"
+            <PasswordBox Name="ConfirmPasswordBox"
                          Height="30"
-                         Padding="0,0,30,0"
-                         Visibility="Collapsed"
-                         TextChanged="ConfirmPasswordTextBox_TextChanged" />
-                <Image Name="ConfirmPasswordEyeIcon"
-                       Source="/Images/eye icon.jpg"
-                       Width="20"
-                       Height="20"
-                       HorizontalAlignment="Right"
-                       VerticalAlignment="Center"
-                       Margin="0,0,5,0"
-                       Cursor="Hand"
-                       MouseLeftButtonDown="ConfirmPasswordEyeIcon_Click" />
-            </Grid>
-
+                         Margin="0,0,0,12" />
+            
             <!-- Date of Birth 
             <TextBlock Text="DATE OF BIRTH"
                        FontWeight="SemiBold"

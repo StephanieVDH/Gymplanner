@@ -50,6 +50,12 @@
                 <Button Content="Start Workout Wizard"
                        Click="StartWizard_Click"
                        Margin="16"/>
+                
+                <Button x:Name="AdminButton"
+                    Content="Admin TEST"
+                    Width="100"
+                    Margin="10,0,0,0"
+                    Click="AdminButton_Click"/>
 
                 <TextBlock Text="Make your personalised gymplanner in 5 min!"
                           FontSize="28"
