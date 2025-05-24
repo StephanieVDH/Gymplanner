@@ -112,7 +112,6 @@ namespace Gymplanner
         public bool DeleteUser(int userId)
         {
             string sql = $"DELETE FROM users WHERE id = {userId};";
-            // Delete(...) returns the row-count, so >0 means “we deleted something”
             return Delete(sql) > 0;
         }
 
