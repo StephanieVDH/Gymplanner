@@ -67,5 +67,11 @@
                     FontWeight="SemiBold"
                     Click="SignUpButton_Click" />
         </StackPanel>
+        <Image Source="/Images/Gymplanner_cropped.jpg"
+         Width="100"
+       Height="100"
+       HorizontalAlignment="Left"
+       VerticalAlignment="Top"
+       Margin="10"/>
     </Grid>
 </Window>
