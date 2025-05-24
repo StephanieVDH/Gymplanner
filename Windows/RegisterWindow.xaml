@@ -38,18 +38,51 @@
             <TextBlock Text="PASSWORD"
                        FontWeight="SemiBold"
                        Margin="0,0,0,4" />
-            <PasswordBox Name="PasswordBox"
+            <Grid Height="30" Margin="0,0,0,12">
+                <PasswordBox Name="PasswordBox"
+                             Height="30"
+                             Padding="0,0,30,0"
+                             PasswordChanged="PasswordBox_PasswordChanged" VerticalAlignment="Bottom" />
+                <TextBox Name="PasswordTextBox"
                          Height="30"
-                         Margin="0,0,0,12" />
-
+                         Padding="0,0,30,0"
+                         Visibility="Collapsed"
+                         TextChanged="PasswordTextBox_TextChanged" />
+                <Image Name="PasswordEyeIcon"
+                       Source="/Images/eye icon.jpg"
+                       Width="20"
+                       Height="20"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center"
+                       Margin="0,0,5,0"
+                       Cursor="Hand"
+                       MouseLeftButtonDown="PasswordEyeIcon_Click" />
+            </Grid>
             <!-- Confirm Password -->
             <TextBlock Text="CONFIRM PASSWORD"
                        FontWeight="SemiBold"
                        Margin="0,0,0,4" />
-            <PasswordBox Name="ConfirmPasswordBox"
+            <Grid Height="30" Margin="0,0,0,12">
+                <PasswordBox Name="ConfirmPasswordBox"
+                             Height="30"
+                             Padding="0,0,30,0"
+                             PasswordChanged="ConfirmPasswordBox_PasswordChanged" Password="" />
+                <TextBox Name="ConfirmPasswordTextBox"
                          Height="30"
-                         Margin="0,0,0,12" />
-            
+                         Padding="0,0,30,0"
+                         Visibility="Collapsed"
+                         TextChanged="ConfirmPasswordTextBox_TextChanged" />
+                <Image Name="ConfirmPasswordEyeIcon"
+                       Source="/Images/eye icon.jpg"
+                       Width="20"
+                       Height="20"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center"
+                       Margin="0,0,5,0"
+                       Cursor="Hand"
+                       MouseLeftButtonDown="ConfirmPasswordEyeIcon_Click" />
+            </Grid>
+
             <!-- Date of Birth 
             <TextBlock Text="DATE OF BIRTH"
                        FontWeight="SemiBold"
