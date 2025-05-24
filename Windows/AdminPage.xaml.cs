@@ -63,7 +63,7 @@ namespace Gymplanner.Windows
                 MessageBox.Show($"Delete {u.Username}?", "Confirm",
                     MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                if (_dataService.DeleteUser(u.ID))
+                if (_dataService.DeleteUser(u.Id))
                     LoadUsers();
             }
         }
@@ -91,7 +91,7 @@ namespace Gymplanner.Windows
                 MessageBox.Show($"Delete {ex.Name}?", "Confirm",
                     MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                if (_dataService.DeleteExercise(ex.ID))
+                if (_dataService.DeleteExercise(ex.Id))
                     LoadExercises();
             }
         }

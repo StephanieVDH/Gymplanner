@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -97,7 +97,7 @@ namespace Gymplanner
             {
                 list.Add(new User  // dit nog aanpassen
                 {
-                    ID = reader.GetInt32("id"),
+                    Id = reader.GetInt32("id"),
                     Username = reader.GetString("username"),
                     Email = reader.GetString("email"),
                     Role = reader.GetString("role"),
@@ -117,6 +117,7 @@ namespace Gymplanner
 
 
         // EXERCISES:
+        // 1. Overview van exercises voor admin page
         public List<Exercise> GetExercises()
         {
             var list = new List<Exercise>();
@@ -128,6 +129,7 @@ namespace Gymplanner
             e.id,
             e.name,
             e.description,
+            e.difficulty_id,
             dl.name            AS difficulty,
             GROUP_CONCAT(mg.name SEPARATOR ', ') AS muscle_groups
         FROM exercises e
@@ -137,43 +139,32 @@ namespace Gymplanner
           ON e.id = emg.exercise_id
         LEFT JOIN muscle_groups mg 
           ON emg.muscle_group_id = mg.id
-        GROUP BY e.id, e.name, e.description, dl.name;
+        GROUP BY e.id, e.name, e.description, e.difficulty_id, dl.name;
     ";
 
             using var cmd = new MySqlCommand(sql, conn);
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
-                list.Add(new Exercise
+                var ex = new Exercise
                 {
-                    ID = reader.GetInt32("id"),
+                    Id = reader.GetInt32("id"),
                     Name = reader.GetString("name"),
                     Description = reader.IsDBNull(reader.GetOrdinal("description"))
-                                      ? null
-                                      : reader.GetString("description"),
+                                           ? string.Empty
+                                           : reader.GetString("description"),
+                    DifficultyId = reader.GetInt32("difficulty_id"),
                     Difficulty = reader.GetString("difficulty"),
-                    MuscleGroup = reader.IsDBNull(reader.GetOrdinal("muscle_groups"))
-                                      ? string.Empty
-                                      : reader.GetString("muscle_groups")
-                });
+                    MuscleGroupNames = reader.IsDBNull(reader.GetOrdinal("muscle_groups"))
+                                           ? string.Empty
+                                           : reader.GetString("muscle_groups"),
+                };
+                list.Add(ex);
             }
+
             return list;
         }
 
-        // Exercise toevoegen:
-        public int InsertExercise(Exercise exercise)
-        {
-            string query =
-                $"INSERT INTO exercises " +
-                $"(id, name, description, muscle_group, difficulty) " +
-                $"VALUES (NULL, " +
-                $"'{exercise.Name}', " +
-                $"'{exercise.Description}', " +
-                $"'{exercise.MuscleGroup}', " +
-                $"'{exercise.Difficulty}');";
-
-            return Insert(query);
-        }
 
         // Exercise verwijderen:
         public bool DeleteExercise(int exerciseId)
@@ -182,6 +173,114 @@ namespace Gymplanner
             return Delete(sql) > 0;
         }
 
+        // All difficulty levels (id + name).
+        public List<DifficultyLevel> GetDifficultyLevels()
+        {
+            var list = new List<DifficultyLevel>();
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+            using var cmd = new MySqlCommand(
+                "SELECT id, name FROM difficulty_levels ORDER BY id;", conn);
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                list.Add(new DifficultyLevel
+                {
+                    Id = rdr.GetInt32("id"),
+                    Name = rdr.GetString("name")
+                });
+            }
+            return list;
+        }
 
+        // All muscle‐group options.
+        public List<MuscleGroup> GetMuscleGroups()
+        {
+            var list = new List<MuscleGroup>();
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+            using var cmd = new MySqlCommand(
+                "SELECT id, name FROM muscle_groups ORDER BY name;", conn);
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                list.Add(new MuscleGroup
+                {
+                    Id = rdr.GetInt32("id"),
+                    Name = rdr.GetString("name")
+                });
+            }
+            return list;
+        }
+
+        // Inserts a new exercise + its difficulty + muscle‐group links.
+        public int InsertExercise(Exercise ex, int difficultyId, List<int> muscleGroupIds)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            // 1) insert into exercises
+            using var cmd = new MySqlCommand(
+                @"INSERT INTO exercises (name, description, difficulty_id)
+              VALUES (@n, @d, @dl);", conn);
+            cmd.Parameters.AddWithValue("@n", ex.Name);
+            cmd.Parameters.AddWithValue("@d", ex.Description ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@dl", difficultyId);
+            cmd.ExecuteNonQuery();
+            int newId = (int)cmd.LastInsertedId;
+
+            // 2) link muscle groups
+            foreach (var mg in muscleGroupIds)
+            {
+                using var link = new MySqlCommand(
+                    @"INSERT INTO exercise_muscle_groups
+                  (exercise_id, muscle_group_id)
+                  VALUES (@e, @m);", conn);
+                link.Parameters.AddWithValue("@e", newId);
+                link.Parameters.AddWithValue("@m", mg);
+                link.ExecuteNonQuery();
+            }
+
+            return newId;
+        }
+
+
+        // Updates an existing exercise and its muscle‐group links.
+        public bool UpdateExercise(Exercise ex, int difficultyId, List<int> muscleGroupIds)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            // 1) update core row
+            using var cmd = new MySqlCommand(
+                @"UPDATE exercises
+              SET name=@n, description=@d, difficulty_id=@dl
+              WHERE id=@i;", conn);
+            cmd.Parameters.AddWithValue("@n", ex.Name);
+            cmd.Parameters.AddWithValue("@d", ex.Description ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@dl", difficultyId);
+            cmd.Parameters.AddWithValue("@i", ex.Id);
+            cmd.ExecuteNonQuery();
+
+            // 2) clear old links
+            using var del = new MySqlCommand(
+                "DELETE FROM exercise_muscle_groups WHERE exercise_id=@i;", conn);
+            del.Parameters.AddWithValue("@i", ex.Id);
+            del.ExecuteNonQuery();
+
+            // 3) insert new links
+            foreach (var mg in muscleGroupIds)
+            {
+                using var link = new MySqlCommand(
+                    @"INSERT INTO exercise_muscle_groups
+                  (exercise_id, muscle_group_id)
+                  VALUES (@e, @m);", conn);
+                link.Parameters.AddWithValue("@e", ex.Id);
+                link.Parameters.AddWithValue("@m", mg);
+                link.ExecuteNonQuery();
+            }
+
+            return true;
+        }
     }
 }

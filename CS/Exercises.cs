@@ -8,26 +8,25 @@ namespace Gymplanner.CS
 {
     public class Exercise
     {
-        /// <summary>
-        /// Primary key identifier.
-        /// </summary>
-        public int ID { get; set; }
-
-        /// <summary>
-        /// The name of the exercise.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// The primary muscle group targeted by this exercise.
-        /// </summary>
-        public string MuscleGroup { get; set; }
-
-        /// <summary>
-        /// The difficulty level (e.g., Beginner, Intermediate, Advanced).
-        /// </summary>
-        public string Difficulty { get; set; }
-        public string Description { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public int DifficultyId { get; set; }
+        public string Difficulty { get; set; } = string.Empty;
+        public string MuscleGroupNames { get; set; } = string.Empty;
+        public List<int> MuscleGroupIds { get; set; } = new();
     }
+
+    public class MuscleGroup
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } 
+    }
+    public class DifficultyLevel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+
 }
 

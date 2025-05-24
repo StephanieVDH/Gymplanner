@@ -8,7 +8,7 @@ namespace Gymplanner.CS
 {
     public class User
     {
-        public int ID { get; set; } // Moet hier ID? Hoe auto incrementen?
+        public int Id { get; set; } // Moet hier ID? Hoe auto incrementen?
         public string Username { get; set; }
         public string Email { get; set; }
         public string PasswordHash { get; set; }
@@ -24,7 +24,6 @@ namespace Gymplanner.CS
             Username = username;
             Email = email;
             PasswordHash = passwordhash;
-            //DateOfBirth = dob;
         }
     }
 }
