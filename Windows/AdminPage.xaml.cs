@@ -6,7 +6,7 @@ namespace Gymplanner.Windows
 {
     public partial class AdminPage : Window
     {
-        private readonly Data _dataService = new Data();
+        private readonly Data data = new Data();
 
         public ObservableCollection<User> Users { get; }
         public ObservableCollection<Exercise> Exercises { get; } 
@@ -29,14 +29,14 @@ namespace Gymplanner.Windows
         private void LoadUsers()
         {
             Users.Clear();
-            foreach (var u in _dataService.GetUsers())
+            foreach (var u in data.GetUsers())
                 Users.Add(u);
         }
 
         private void LoadExercises()
         {
             Exercises.Clear();
-            foreach (var ex in _dataService.GetExercises())
+            foreach (var ex in data.GetExercises())
                 Exercises.Add(ex);
         }
 
@@ -63,7 +63,7 @@ namespace Gymplanner.Windows
                 MessageBox.Show($"Delete {u.Username}?", "Confirm",
                     MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                if (_dataService.DeleteUser(u.Id))
+                if (data.DeleteUser(u.Id))
                     LoadUsers();
             }
         }
@@ -91,7 +91,7 @@ namespace Gymplanner.Windows
                 MessageBox.Show($"Delete {ex.Name}?", "Confirm",
                     MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                if (_dataService.DeleteExercise(ex.Id))
+                if (data.DeleteExercise(ex.Id))
                     LoadExercises();
             }
         }

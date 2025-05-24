@@ -90,21 +90,27 @@ namespace Gymplanner
             conn.Open();
 
             using var cmd = new MySqlCommand(
-                @"SELECT id, username, email, role_id, created_at 
-                  FROM users;", conn);
+            @"SELECT u.id,
+                     u.username,
+                     u.email,
+                     r.name   AS role,
+                     u.created_at
+              FROM users u
+              JOIN roles r
+                ON u.role_id = r.id;", conn);
+
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
-                list.Add(new User  // dit nog aanpassen
+                list.Add(new User
                 {
                     Id = reader.GetInt32("id"),
                     Username = reader.GetString("username"),
                     Email = reader.GetString("email"),
-                    Role = reader.GetString("role"),
+                    Role = reader.GetString("role"),        // now valid
                     CreatedAt = reader.GetDateTime("created_at")
                 });
             }
-
             return list;
         }
 
