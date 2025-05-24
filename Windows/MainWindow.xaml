@@ -13,13 +13,13 @@
         <!-- Header -->
         <DockPanel Grid.Row="0" Background="#FF7B68EE" Height="60" LastChildFill="False">
             <!-- Logo on the Left -->
-            <Button Content="LOGO"
-                   FontWeight="Bold"
+            <Image Source="/Images/Gymplanner_transparent.png"
                    Width="100"
-                   Height="30"
+                   Height="50"
                    Margin="10,0"
                    VerticalAlignment="Center"
-                   DockPanel.Dock="Left"/>
+                   DockPanel.Dock="Left"
+                   Stretch="Uniform"/>
 
             <!-- Login on the Right -->
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Margin="0,0,10,0" VerticalAlignment="Center">
@@ -56,7 +56,7 @@
                           FontStyle="Italic"
                           Margin="0,10"/>
 
-                <Image Source="/Assets/banner_placeholder.png"
+                <Image Source="/Images/pick_up.jpg"
                       Height="200"
                       Stretch="UniformToFill"/>
 
@@ -89,10 +89,12 @@
                                Height="Auto"/>
 
                     <Image Grid.Column="1"
-                          Source="/Assets/about_placeholder.png"
-                          Height="120"
-                          Stretch="UniformToFill"
-                          Margin="10,0,0,0"/>
+       Source="/Images/about_us.jpg"
+       Height="280"
+       Stretch="UniformToFill"
+       VerticalAlignment="Bottom"
+       HorizontalAlignment="Center"
+       Margin="10,0,0,0"/>
                 </Grid>
             </ItemsControl>
         </ScrollViewer>
