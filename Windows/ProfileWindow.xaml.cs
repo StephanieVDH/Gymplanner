@@ -22,10 +22,24 @@ namespace Gymplanner.Windows
         {
             InitializeComponent();
 
-            // Set a fallback background color for testing
-            this.Background = new SolidColorBrush(Colors.White);
+            // Handle missing image gracefully
+            try
+            {
+                // Try to load the image, if it fails, set a fallback
+                if (ProfileImageBrush.ImageSource == null)
+                {
+                    // Create a fallback colored brush
+                    ProfileImageBrush.ImageSource = null;
+                    // You could also set a solid color fill here instead
+                }
+            }
+            catch (Exception ex)
+            {
+                // If image loading fails, continue without it
+                System.Diagnostics.Debug.WriteLine($"Could not load profile image: {ex.Message}");
+            }
 
-            LoadUserData(); // Load user data when window opens
+            LoadUserData();
         }
 
         private void LoadUserData()
