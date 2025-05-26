@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Compile Remove="Windows\ProfileWindow.xaml.cs" />
+    <Compile Remove="Wizard\FocusMusclesQuestionControl.xaml.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +21,7 @@
 
   <ItemGroup>
     <Page Remove="Windows\ProfileWindow.xaml" />
+    <Page Remove="Wizard\FocusMusclesQuestionControl.xaml" />
   </ItemGroup>
 
   <ItemGroup>

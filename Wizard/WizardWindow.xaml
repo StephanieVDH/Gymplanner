@@ -26,9 +26,6 @@
         <DataTemplate x:Key="FocusTemplate">
             <vm:FocusQuestionControl/>
         </DataTemplate>
-        <DataTemplate x:Key="FocusMusclesTemplate">
-            <vm:FocusMusclesQuestionControl/>
-        </DataTemplate>
     </Window.Resources>
 
 
@@ -80,13 +77,10 @@
 						<DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:Questions.Duration}">
 							<Setter Property="ContentTemplate" Value="{StaticResource DurationTemplate}"/>
 						</DataTrigger>
-						<DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:Questions.Focus}">
-							<Setter Property="ContentTemplate" Value="{StaticResource FocusTemplate}"/>
-						</DataTrigger>
-						<DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:Questions.FocusMuscles}">
-							<Setter Property="ContentTemplate" Value="{StaticResource FocusMusclesTemplate}"/>
-						</DataTrigger>
-					</Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:Questions.Focus}">
+                            <Setter Property="ContentTemplate" Value="{StaticResource FocusTemplate}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
 				</Style>
 			</ContentControl.Style>
 		</ContentControl>
