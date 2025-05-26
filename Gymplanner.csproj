@@ -10,19 +10,16 @@
 
   <ItemGroup>
     <Compile Remove="Windows\ProfileWindow.xaml.cs" />
-    <Compile Remove="Wizard\FocusMusclesQuestionControl.xaml.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Images\about_us.jpg" />
-    <None Remove="Images\eye icon.jpg" />
     <None Remove="Images\Gymplanner_transparent.png" />
     <None Remove="Images\pick_up.jpg" />
   </ItemGroup>
 
   <ItemGroup>
     <Page Remove="Windows\ProfileWindow.xaml" />
-    <Page Remove="Wizard\FocusMusclesQuestionControl.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,7 +31,7 @@
     <Resource Include="Images\about_us.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Images\eye icon.jpg">
+    <Resource Include="Images\eye_icon.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\Gymplanner_transparent.png">
