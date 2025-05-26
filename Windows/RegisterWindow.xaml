@@ -35,38 +35,44 @@
                      Margin="0,0,0,12" />
 
             <!-- Password -->
-            <TextBlock Text="PASSWORD"
-                       FontWeight="SemiBold"
-                       Margin="0,0,0,4" />
-            <Grid Height="30" Margin="0,0,0,12">
-                <PasswordBox Name="PasswordBox"
-                             Height="30"
-                             Padding="0,0,30,0"
-                             PasswordChanged="PasswordBox_PasswordChanged" VerticalAlignment="Bottom" />
-                <TextBox Name="PasswordTextBox"
-                         Height="30"
-                         Padding="0,0,30,0"
-                         Visibility="Collapsed"
-                         TextChanged="PasswordTextBox_TextChanged" />
-                <Image Name="PasswordEyeIcon"
-                       Source="/Images/eye icon.jpg"
-                       Width="20"
-                       Height="20"
-                       HorizontalAlignment="Right"
-                       VerticalAlignment="Center"
-                       Margin="0,0,5,0"
-                       Cursor="Hand"
-                       MouseLeftButtonDown="PasswordEyeIcon_Click" />
+            <TextBlock Text="PASSWORD" FontWeight="SemiBold" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,10"/>
+            <Grid Grid.Row="2" Grid.Column="1" Margin="0,0,0,10">
+                <PasswordBox x:Name="PasswordBox"
+                   PasswordChanged="PasswordBox_PasswordChanged"
+                   Height="30"
+                   Margin="0,0,0,12" />
+                <TextBox x:Name="PasswordTextBox"
+                  TextChanged="PasswordTextBox_TextChanged"
+                  Visibility="Collapsed"
+                  Width="180"/>
+                <Image Source="/Images/eye_icon.jpg"
+                  MouseDown="PasswordEyeIcon_Click"
+                  Width="16" Height="16"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Top"
+                  Cursor="Hand" RenderTransformOrigin="2.25,0.236" Margin="0,7,-31,0"/>
             </Grid>
+
             <!-- Confirm Password -->
-            <TextBlock Text="CONFIRM PASSWORD"
-                       FontWeight="SemiBold"
-                       Margin="0,0,0,4" />
-            <PasswordBox Name="ConfirmPasswordBox"
-                         Height="30"
-                         Margin="0,0,0,12" />
-            
-            <!-- Date of Birth 
+            <TextBlock Text="CONFIRM PASSWORD" FontWeight="SemiBold"  Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,10"/>
+            <Grid Grid.Row="3" Grid.Column="1" Margin="0,0,0,10">
+                <PasswordBox x:Name="ConfirmPasswordBox"
+                   PasswordChanged="ConfirmPasswordBox_PasswordChanged"
+                   Height="30"
+                   Margin="0,0,0,12" />
+                <TextBox    x:Name="ConfirmPasswordTextBox"
+                  TextChanged="ConfirmPasswordTextBox_TextChanged"
+                  Visibility="Collapsed"
+                  Width="180"/>
+                <Image      Source="/Images/eye_icon.jpg"
+                  MouseDown="ConfirmPasswordEyeIcon_Click"
+                  Width="16" Height="16"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Top"
+                  Cursor="Hand" Margin="0,7,-32,0"/>
+            </Grid>
+
+            <!-- Date of Birth
             <TextBlock Text="DATE OF BIRTH"
                        FontWeight="SemiBold"
                        Margin="0,0,0,4" />
