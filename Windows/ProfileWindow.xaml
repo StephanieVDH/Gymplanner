@@ -48,7 +48,7 @@
                              StrokeThickness="3">
                         <Ellipse.Fill>
                             <ImageBrush x:Name="ProfileImageBrush"
-                                        ImageSource="/Images/default-avatar.png"
+                                        ImageSource="/Images/default-avatar.jpg"
                                         Stretch="UniformToFill"/>
                         </Ellipse.Fill>
                     </Ellipse>
