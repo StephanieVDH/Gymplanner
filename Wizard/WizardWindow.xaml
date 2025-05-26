@@ -2,51 +2,61 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:Gymplanner.Wizard"
-        xmlns:local="clr-namespace:Gymplanner"
         Title="Workout Wizard" Height="600" Width="400">
 
     <Window.Resources>
-        <!-- converters still keyed as before -->
+        <!-- converters -->
         <vm:StepToBrushConverter x:Key="StepToBrushConverter"/>
         <vm:StepToIconConverter  x:Key="StepToIconConverter"/>
 
-        <!-- now each template has an x:Key -->
+        <!-- templates for each step -->
         <DataTemplate x:Key="LevelTemplate">
             <vm:LevelQuestionControl/>
         </DataTemplate>
+
         <DataTemplate x:Key="GoalTemplate">
             <vm:GoalQuestionControl/>
         </DataTemplate>
+
         <DataTemplate x:Key="SessionsTemplate">
             <vm:SessionsQuestionControl/>
         </DataTemplate>
+
         <DataTemplate x:Key="DurationTemplate">
             <vm:DurationQuestionControl/>
         </DataTemplate>
+
+        <!-- Here we “inject” the Window’s ViewModel as the FocusQuestionControl’s DataContext -->
         <DataTemplate x:Key="FocusTemplate">
-            <vm:FocusQuestionControl/>
+            <vm:FocusQuestionControl
+        DataContext="{Binding DataContext,
+                      RelativeSource={RelativeSource AncestorType=Window}}"/>
         </DataTemplate>
     </Window.Resources>
 
-
+    <!-- hook up your VM -->
     <Window.DataContext>
         <vm:WizardViewModel/>
     </Window.DataContext>
 
     <StackPanel Margin="16">
-        <!-- Step indicator -->
+
+        <!-- 1) Step indicator -->
         <ItemsControl ItemsSource="{Binding Steps}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal"
+                      HorizontalAlignment="Center"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border Width="40" Height="40" Margin="4" CornerRadius="20">
+                    <Border Width="40" Height="40"
+                  Margin="4" CornerRadius="20">
                         <Border.Background>
                             <MultiBinding Converter="{StaticResource StepToBrushConverter}">
-                                <Binding Path="CurrentStep" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                <Binding Path="CurrentStep"
+                         RelativeSource="{RelativeSource AncestorType=Window}"/>
                                 <Binding Path="."/>
                             </MultiBinding>
                         </Border.Background>
@@ -57,39 +67,54 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <!-- Question content -->
-		<!-- new: ContentControl with Style+DataTriggers -->
-		<ContentControl Content="{Binding CurrentStep}" Margin="0,24">
-			<ContentControl.Style>
-				<Style TargetType="ContentControl">
-					<!-- default fallback -->
-					<Setter Property="ContentTemplate" Value="{StaticResource LevelTemplate}"/>
-					<Style.Triggers>
-						<DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:Questions.Level}">
-							<Setter Property="ContentTemplate" Value="{StaticResource LevelTemplate}"/>
-						</DataTrigger>
-						<DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:Questions.Goal}">
-							<Setter Property="ContentTemplate" Value="{StaticResource GoalTemplate}"/>
-						</DataTrigger>
-						<DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:Questions.Sessions}">
-							<Setter Property="ContentTemplate" Value="{StaticResource SessionsTemplate}"/>
-						</DataTrigger>
-						<DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:Questions.Duration}">
-							<Setter Property="ContentTemplate" Value="{StaticResource DurationTemplate}"/>
-						</DataTrigger>
-                        <DataTrigger Binding="{Binding CurrentStep}" Value="{x:Static vm:Questions.Focus}">
-                            <Setter Property="ContentTemplate" Value="{StaticResource FocusTemplate}"/>
+        <!-- 2) ContentControl uses a Style to pick the right template -->
+        <ContentControl Content="{Binding CurrentStep}"
+                    Margin="0,24">
+            <ContentControl.Style>
+                <Style TargetType="ContentControl">
+                    <!-- default -->
+                    <Setter Property="ContentTemplate"
+                  Value="{StaticResource LevelTemplate}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentStep}"
+                         Value="{x:Static vm:Questions.Level}">
+                            <Setter Property="ContentTemplate"
+                      Value="{StaticResource LevelTemplate}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentStep}"
+                         Value="{x:Static vm:Questions.Goal}">
+                            <Setter Property="ContentTemplate"
+                      Value="{StaticResource GoalTemplate}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentStep}"
+                         Value="{x:Static vm:Questions.Sessions}">
+                            <Setter Property="ContentTemplate"
+                      Value="{StaticResource SessionsTemplate}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentStep}"
+                         Value="{x:Static vm:Questions.Duration}">
+                            <Setter Property="ContentTemplate"
+                      Value="{StaticResource DurationTemplate}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentStep}"
+                         Value="{x:Static vm:Questions.Focus}">
+                            <Setter Property="ContentTemplate"
+                      Value="{StaticResource FocusTemplate}"/>
                         </DataTrigger>
                     </Style.Triggers>
-				</Style>
-			</ContentControl.Style>
-		</ContentControl>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
 
-
-		<!-- Navigation buttons -->
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
-            <Button Content="←" Command="{Binding PrevCommand}" Margin="0,0,8,0"/>
-            <Button Content="→" Command="{Binding NextCommand}"/>
+        <!-- 3) Prev / Next -->
+        <StackPanel Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Margin="0,16,0,0">
+            <Button Content="←"
+              Command="{Binding PrevCommand}"
+              Margin="0,0,8,0"/>
+            <Button Content="→"
+              Command="{Binding NextCommand}"/>
         </StackPanel>
     </StackPanel>
 </Window>
