@@ -28,17 +28,10 @@ namespace Gymplanner.Windows
         public string Goal { get; set; }
         public bool HasCompletedQuestionnaire { get; set; }
 
-        public ProfileWindow((string username, string email, bool hasCompletedQuestionnaire = false,
-                           string fitnessLevel = "", string workoutDays = "", string goal = "")
+        public ProfileWindow()
         {
             InitializeComponent();
-
-            Username = username;
-            Email = email;
-            HasCompletedQuestionnaire = hasCompletedQuestionnaire;
-            FitnessLevel = fitnessLevel;
-            WorkoutDays = workoutDays;
-            Goal = goal;
+            //to fill in with data conneciton
 
             LoadUserData();
         }
@@ -69,28 +62,8 @@ namespace Gymplanner.Windows
 
         private void LoadProfilePicture()
         {
-            try
-            {
-                // Try to load saved profile picture from app data folder
-                string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                string gymPlannerFolder = Path.Combine(appDataPath, "GymPlanner");
-                string profilePicturePath = Path.Combine(gymPlannerFolder, $"{Username}_profile.jpg");
-
-                if (File.Exists(profilePicturePath))
-                {
-                    BitmapImage bitmap = new BitmapImage();
-                    bitmap.BeginInit();
-                    bitmap.UriSource = new Uri(profilePicturePath, UriKind.Absolute);
-                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmap.EndInit();
-                    ProfileImageBrush.ImageSource = bitmap;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading profile picture: {ex.Message}", "Error",
-                              MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
+            //code to load in profile
+            
         }
 
         private void UploadPictureBtn_Click(object sender, RoutedEventArgs e)
@@ -131,25 +104,7 @@ namespace Gymplanner.Windows
 
         private void SaveProfilePicture(string sourcePath)
         {
-            try
-            {
-                string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                string gymPlannerFolder = Path.Combine(appDataPath, "GymPlanner");
-
-                // Create directory if it doesn't exist
-                if (!Directory.Exists(gymPlannerFolder))
-                {
-                    Directory.CreateDirectory(gymPlannerFolder);
-                }
-
-                string destinationPath = Path.Combine(gymPlannerFolder, $"{Username}_profile.jpg");
-                File.Copy(sourcePath, destinationPath, true);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error saving profile picture: {ex.Message}", "Error",
-                              MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
+            //code to save the picture
         }
 
         private void GymPlannerBtn_Click(object sender, RoutedEventArgs e)
@@ -274,22 +229,7 @@ namespace Gymplanner.Windows
 
         private void DeleteLocalProfileData()
         {
-            try
-            {
-                string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                string gymPlannerFolder = Path.Combine(appDataPath, "GymPlanner");
-                string profilePicturePath = Path.Combine(gymPlannerFolder, $"{Username}_profile.jpg");
-
-                if (File.Exists(profilePicturePath))
-                {
-                    File.Delete(profilePicturePath);
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log error but don't show to user since account is being deleted anyway
-                Console.WriteLine($"Error deleting local profile data: {ex.Message}");
-            }
+            // code to delete the data of  an account
         }
 
         // Method to update user preferences after questionnaire completion

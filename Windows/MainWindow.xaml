@@ -51,6 +51,13 @@
                        Click="StartWizard_Click"
                        Margin="16"/>
                 
+                <Button Content="View Profile"
+                   Click="UserProfile_Click"
+                   Height="40"
+                   Margin="10,0,0,0"
+                   Background="#FF9C27B0"
+                   Foreground="White"/>
+
                 <Button x:Name="AdminButton"
                     Content="Admin TEST"
                     Width="100"
