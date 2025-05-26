@@ -3,23 +3,58 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Height="Auto" Width="Auto">
+
     <StackPanel Margin="16" VerticalAlignment="Top">
+
+        <!-- Title -->
         <TextBlock 
         Text="Which area do you want to focus on?" 
         FontSize="18" FontWeight="Bold" 
         Margin="0,0,0,12"/>
-        <Button Content="Upper body"
-            Command="{Binding SelectFocusCommand}"
-            CommandParameter="Upper body"
-            Margin="0,4"/>
-        <Button Content="Lower body"
-            Command="{Binding SelectFocusCommand}"
-            CommandParameter="Lower body"
-            Margin="0,4"/>
-        <Button Content="Full body"
-            Command="{Binding SelectFocusCommand}"
-            CommandParameter="Full body"
-            Margin="0,4"/>
+
+        <!-- Broad-area buttons -->
+        <StackPanel Orientation="Horizontal" Margin="0,8">
+            <Button Content="Upper Body"
+              Command="{Binding SelectFocusCommand}"
+              CommandParameter="Upper body"
+              Margin="0,4"/>
+            <Button Content="Lower Body"
+              Command="{Binding SelectFocusCommand}"
+              CommandParameter="Lower body"
+              Margin="0,4"/>
+            <Button Content="Full Body"
+              Command="{Binding SelectFocusCommand}"
+              CommandParameter="Full body"
+              Margin="0,4"/>
+        </StackPanel>
+
+        <!-- Expander for specific muscles -->
+        <Expander Header="…or pick specific muscles" Margin="0,16,0,0">
+            <StackPanel>
+
+                <ItemsControl ItemsSource="{Binding AllMuscleOptions}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox Content="{Binding}">
+                                <CheckBox.IsChecked>
+                                    <Binding 
+                    Path="DataContext.SelectedMuscles"
+                    RelativeSource="{RelativeSource AncestorType=UserControl}"
+                    Mode="TwoWay"
+                    Converter="{StaticResource ListContainsConverter}"
+                    ConverterParameter="{Binding}" />
+                                </CheckBox.IsChecked>
+                            </CheckBox>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Button Content="Done"
+                Command="{Binding CommitMuscleSelectionCommand}"
+                Margin="0,8,0,0"
+                HorizontalAlignment="Right"/>
+            </StackPanel>
+        </Expander>
+
     </StackPanel>
 </UserControl>
-

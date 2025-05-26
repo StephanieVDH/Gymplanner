@@ -18,7 +18,6 @@ namespace Gymplanner.Wizard
                 Questions.Sessions => "icon-sessions.png",
                 Questions.Duration => "icon-duration.png",
                 Questions.Focus => "icon-focus.png",
-                Questions.FocusMuscles => "icon-muscles.png",
                 _ => "icon-default.png"
             };
 

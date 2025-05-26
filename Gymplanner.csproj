@@ -9,10 +9,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Windows\ProfileWindow.xaml.cs" />
+    <Compile Remove="Wizard\FocusMusclesQuestionControl.xaml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Images\about_us.jpg" />
     <None Remove="Images\eye icon.jpg" />
     <None Remove="Images\Gymplanner_transparent.png" />
     <None Remove="Images\pick_up.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="Windows\ProfileWindow.xaml" />
+    <Page Remove="Wizard\FocusMusclesQuestionControl.xaml" />
   </ItemGroup>
 
   <ItemGroup>

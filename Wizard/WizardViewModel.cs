@@ -13,8 +13,7 @@ namespace Gymplanner.Wizard
         Goal,         // afvallen, conditie, …
         Sessions,     // aantal sessies per week
         Duration,     // duur van de sessies
-        Focus,        // boven-/onder-/volledig lichaam
-        FocusMuscles  // welke spiergroepen
+        Focus        // lichaamsdeel of spiergroepen kiezen
     }
 
     public class WizardViewModel : INotifyPropertyChanged
