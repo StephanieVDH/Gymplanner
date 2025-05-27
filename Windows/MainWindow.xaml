@@ -34,7 +34,7 @@
         </DockPanel>
 
         <!-- Main Content Scrollable -->
-        <ScrollViewer Grid.Row="1">
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <ItemsControl Margin="20">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -116,7 +116,7 @@
         <DockPanel Grid.Row="2" Background="#FF7B68EE" Height="40">
             <TextBlock Text="nr.: 046567983     |     Mail: info@gymplanner.com"
                       Foreground="White"
-                      VerticalAlignment="Center"
+                      VerticalAlignment="Stretch"
                       HorizontalAlignment="Center"
                       FontSize="14"/>
         </DockPanel>

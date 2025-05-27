@@ -54,7 +54,7 @@ namespace Gymplanner.Windows
             }
 
             // Get user information for the logged-in user
-            var user = db.GetUserByEmail(email);
+            var user = db.GetUserByEmailForProfile(email);
             if (user != null)
             {
                 // Pass user data to ProfileWindow
