@@ -31,7 +31,6 @@ namespace Gymplanner.Windows
                 MessageBox.Show("Please enter your email.");
                 return;
             }
-
             if (password == "")
             {
                 MessageBox.Show("Please enter your password.");
@@ -54,9 +53,19 @@ namespace Gymplanner.Windows
                 return;
             }
 
-            var main = new MainWindow();
-            main.Show();
-            this.Close();
+            // Get user information for the logged-in user
+            var user = db.GetUserByEmail(email);
+            if (user != null)
+            {
+                // Pass user data to ProfileWindow
+                var profileWindow = new ProfileWindow(user);
+                profileWindow.Show();
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Error retrieving user information.");
+            }
         }
 
         private void Register_Click(object sender, RoutedEventArgs e)
