@@ -21,6 +21,15 @@ CREATE TABLE users (
   FOREIGN KEY (role_id) REFERENCES roles(id)
 );
 
+ALTER TABLE users 
+ADD COLUMN deleted_at DATETIME NULL 
+AFTER updated_at;
+
+-- This helps when filtering active users (WHERE deleted_at IS NULL)
+CREATE INDEX idx_users_deleted_at ON users(deleted_at);
+
+
+
 -- 3. Goals & Fitness Levels
 CREATE TABLE goals (
   id   INT AUTO_INCREMENT PRIMARY KEY,

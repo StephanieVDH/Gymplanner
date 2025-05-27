@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Gymplanner.CS;
+using Gymplanner.Wizard; // Add this using statement for WizardWindow
 using static Gymplanner.CS.User;
 
 namespace Gymplanner.Windows
@@ -207,38 +208,140 @@ namespace Gymplanner.Windows
 
         private void GymPlannerBtn_Click(object sender, RoutedEventArgs e)
         {
-            // Navigate to gym planner window
-            // Pass user data if needed
-            // GymPlannerWindow gymPlannerWindow = new GymPlannerWindow(userProfile.User);
-            // gymPlannerWindow.Show();
-            // this.Close();
+            try
+            {
+                WizardWindow wizardWindow = new WizardWindow();
 
-            MessageBox.Show("Navigate to Gym Planner", "Info");
+                // Set the owner to maintain proper window hierarchy
+                wizardWindow.Owner = this;
+
+                // Show as modal dialog - user must complete or cancel wizard
+                bool? result = wizardWindow.ShowDialog();
+
+                if (result == true)
+                {
+                    // Wizard completed successfully
+                    MessageBox.Show("Workout plan created successfully!", "Success",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // Refresh the user profile data in case preferences were updated
+                    if (userProfile?.User != null)
+                    {
+                        LoadUserProfile(userProfile.User);
+                    }
+                }
+                else if (result == false)
+                {
+                    // Wizard was cancelled
+                    // No action needed, just return to profile
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening Workout Wizard: {ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ResetPasswordBtn_Click(object sender, RoutedEventArgs e)
         {
-            // Open password reset dialog or window
-            MessageBox.Show("Password reset functionality", "Reset Password");
+            try
+            {
+                if (userProfile?.User == null)
+                {
+                    MessageBox.Show("User data not available. Please try refreshing the profile.",
+                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                // Open password reset dialog
+                PasswordResetDialog resetDialog = new PasswordResetDialog(userProfile.User);
+                resetDialog.Owner = this;
+
+                bool? result = resetDialog.ShowDialog();
+
+                if (result == true)
+                {
+                    // Password was successfully reset
+                    // Optionally refresh user data or show additional confirmation
+                    LoadUserProfile(userProfile.User);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening password reset dialog: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void DeleteAccountBtn_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show(
-                "Are you sure you want to delete your account? This action cannot be undone.",
-                "Confirm Account Deletion",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
-
-            if (result == MessageBoxResult.Yes)
+            try
             {
-                // Implement account deletion logic
-                if (userProfile?.User != null)
+                if (userProfile?.User == null)
                 {
-                    // TODO: Implement DeleteUser method in Data class
-                    // db.DeleteUser(userProfile.User.Id);
+                    MessageBox.Show("User data not available. Please try refreshing the profile.",
+                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
                 }
-                MessageBox.Show("Account deletion functionality", "Delete Account");
+
+                // First confirmation
+                MessageBoxResult firstConfirm = MessageBox.Show(
+                    "Are you sure you want to delete your account?\n\n" +
+                    "This will permanently deactivate your account and you will lose access to:\n" +
+                    "• Your workout preferences\n" +
+                    "• Your workout history\n" +
+                    "• Your profile data\n\n" +
+                    "This action cannot be easily undone.",
+                    "Confirm Account Deletion",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                if (firstConfirm != MessageBoxResult.Yes)
+                    return;
+
+                // Second confirmation for safety
+                MessageBoxResult finalConfirm = MessageBox.Show(
+                    $"This is your final confirmation.\n\n" +
+                    $"Delete account for: {userProfile.User.Email}?\n\n" +
+                    "Type your username and click Yes to proceed.",
+                    "FINAL CONFIRMATION",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Stop);
+
+                if (finalConfirm == MessageBoxResult.Yes)
+                {
+                    var db = new Data();
+
+                    // Perform soft delete
+                    if (db.SoftDeleteUser(userProfile.User.Id))
+                    {
+                        MessageBox.Show(
+                            "Your account has been successfully deactivated.\n\n" +
+                            "Thank you for using our app. If you ever want to reactivate your account, " +
+                            "please contact support.",
+                            "Account Deleted",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Information);
+
+                        // Close this window and return to login
+                        // You might want to navigate back to login window here
+                        this.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show(
+                            "Failed to delete account. Please try again or contact support if the problem persists.",
+                            "Deletion Failed",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error deleting account: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

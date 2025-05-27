@@ -250,6 +250,118 @@ namespace Gymplanner
             return Delete(sql) > 0;
         }
 
+        public bool UpdateUserPassword(int userId, string newPasswordHash)
+        {
+            string query = "UPDATE users SET password_hash = @passwordHash, updated_at = NOW() WHERE id = @userId";
+
+            try
+            {
+                using (var connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@passwordHash", newPasswordHash);
+                        command.Parameters.AddWithValue("@userId", userId);
+
+                        int rowsAffected = command.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating password: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Soft delete user account by setting deleted_at timestamp
+        /// Note: You'll need to add a 'deleted_at' column to your users table
+        /// ALTER TABLE users ADD COLUMN deleted_at DATETIME NULL;
+        /// </summary>
+        public bool SoftDeleteUser(int userId)
+        {
+            string query = "UPDATE users SET deleted_at = NOW(), updated_at = NOW() WHERE id = @userId";
+
+            try
+            {
+                using (var connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@userId", userId);
+
+                        int rowsAffected = command.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error soft deleting user: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Check if user account exists and is not deleted
+        /// </summary>
+        public bool IsUserActive(int userId)
+        {
+            string query = "SELECT COUNT(*) FROM users WHERE id = @userId AND deleted_at IS NULL";
+
+            try
+            {
+                using (var connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@userId", userId);
+
+                        int count = Convert.ToInt32(command.ExecuteScalar());
+                        return count > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error checking user status: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Verify current password before allowing reset
+        /// </summary>
+        public bool VerifyCurrentPassword(int userId, string currentPasswordHash)
+        {
+            string query = "SELECT password_hash FROM users WHERE id = @userId AND deleted_at IS NULL";
+
+            try
+            {
+                using (var connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@userId", userId);
+
+                        var storedHash = command.ExecuteScalar() as string;
+                        return storedHash != null && storedHash == currentPasswordHash;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error verifying password: {ex.Message}");
+                return false;
+            }
+        }
+
 
         // EXERCISES:
         // 1. Overview van exercises voor admin page
