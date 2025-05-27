@@ -11,19 +11,23 @@
 
         <!-- templates for each step -->
         <DataTemplate x:Key="LevelTemplate">
-            <vm:LevelQuestionControl/>
+            <vm:LevelQuestionControl
+             DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"/>
         </DataTemplate>
 
         <DataTemplate x:Key="GoalTemplate">
-            <vm:GoalQuestionControl/>
+            <vm:GoalQuestionControl
+             DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"/>
         </DataTemplate>
 
         <DataTemplate x:Key="SessionsTemplate">
-            <vm:SessionsQuestionControl/>
+            <vm:SessionsQuestionControl
+              DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"/>
         </DataTemplate>
 
         <DataTemplate x:Key="DurationTemplate">
-            <vm:DurationQuestionControl/>
+            <vm:DurationQuestionControl
+              DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"/>
         </DataTemplate>
 
         <!-- Here we “inject” the Window’s ViewModel as the FocusQuestionControl’s DataContext -->

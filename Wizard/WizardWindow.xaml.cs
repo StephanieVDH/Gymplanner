@@ -27,8 +27,12 @@ namespace Gymplanner.Wizard
 
         public WizardWindow(int userId)
         {
-           InitializeComponent();
-           DataContext = new WizardViewModel(userId);
+            InitializeComponent();
+            var vm = new WizardViewModel(userId);
+            this.DataContext = vm;
+
+            // Let the VM call back here when finished
+            vm.CloseAction = () => this.Dispatcher.Invoke(this.Close);
         }
 
     }

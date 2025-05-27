@@ -307,30 +307,30 @@ namespace Gymplanner
             int levelId,
             int availableDaysPerWeek,
             int sessionDurationMinutes,
-            IEnumerable<string> muscleGroupNames)
+            IEnumerable<int> muscleGroupIds)      // ← now ints
         {
-            // 1) Insert into user_preferences with the FKs directly
-            var prefQuery = $@"
-                INSERT INTO user_preferences
-                  (id, user_id, goal_id, fitness_level_id, available_days_per_week, session_duration_minutes)
-                VALUES
-                  (NULL, {userId}, {goalId}, {levelId}, {availableDaysPerWeek}, {sessionDurationMinutes});
-            ";
-            int prefId = Insert(prefQuery);
-            if (prefId< 0) return -1;
+            // 1) Insert the main preference record
+            var prefQuery = $@"INSERT INTO user_preferences
+            (id, user_id, goal_id, level_id, available_days_per_week, session_duration_minutes)
+            VALUES (NULL, {userId}, {goalId}, {levelId}, {availableDaysPerWeek}, {sessionDurationMinutes});
+             ";
 
-            // 2) Link each muscle by name→id lookup
-            foreach (var mgName in muscleGroupNames)
+            int prefId = Insert(prefQuery);
+            if (prefId < 0) return -1;
+
+            // 2) Insert each muscle_group link directly by its ID
+            foreach (var mgId in muscleGroupIds)
             {
-              var mgId = QuerySingleInt(
-                $"SELECT id FROM muscle_groups WHERE name = '{mgName.Replace("'", "''")}' LIMIT 1;");
-              if (mgId > 0)
-              {
-                Insert($@"INSERT INTO preference_muscle_groups
-                      (preference_id, muscle_group_id)
-                      VALUES ({prefId}, {mgId});");
-              }
+                // no lookup by name—mgId is already the PK
+                var linkQuery = $@"
+            INSERT INTO preference_muscle_groups
+              (preference_id, muscle_group_id)
+            VALUES
+              ({prefId}, {mgId});
+        ";
+                Insert(linkQuery);
             }
+
             return prefId;
         }
 

@@ -7,19 +7,68 @@
     <StackPanel Margin="16" VerticalAlignment="Top">
         <TextBlock 
         Text="What’s your fitness level?" 
-        FontSize="18" FontWeight="Bold" 
+        FontSize="18" FontWeight="Bold"
         Margin="0,0,0,12"/>
 
-        <!-- Replace these with however many choices you have -->
+        <!-- Beginner -->
         <Button Content="Beginner"
-        Command="{Binding SelectLevelCommand}"
-        CommandParameter="1" />
+            Command="{Binding SelectLevelCommand}"
+            CommandParameter="1"
+            Width="120" Margin="0,4">
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="Background" Value="LightGray"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedLevelId}"
+                         Value="1">
+                            <Setter Property="Background" Value="CornflowerBlue"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+
+        <!-- Intermediate -->
         <Button Content="Intermediate"
-        Command="{Binding SelectLevelCommand}"
-        CommandParameter="2" />
+            Command="{Binding SelectLevelCommand}"
+            CommandParameter="2"
+            Width="120" Margin="0,4">
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="Background" Value="LightGray"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedLevelId}"
+                         Value="2">
+                            <Setter Property="Background" Value="CornflowerBlue"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+
+        <!-- Advanced -->
         <Button Content="Advanced"
-        Command="{Binding SelectLevelCommand}"
-        CommandParameter="3" />
+            Command="{Binding SelectLevelCommand}"
+            CommandParameter="3"
+            Width="120" Margin="0,4">
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="Background" Value="LightGray"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedLevelId}"
+                         Value="3">
+                            <Setter Property="Background" Value="CornflowerBlue"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
 
     </StackPanel>
 </UserControl>
