@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Gymplanner.CS;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,5 +24,12 @@ namespace Gymplanner.Wizard
         {
             InitializeComponent();
         }
+
+        public WizardWindow(int userId)
+        {
+           InitializeComponent();
+           DataContext = new WizardViewModel(userId);
+        }
+
     }
 }

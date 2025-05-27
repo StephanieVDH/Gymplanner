@@ -8,18 +8,25 @@
         Text="What’s your goal?" 
         FontSize="18" FontWeight="Bold" 
         Margin="0,0,0,12"/>
-        <Button Content="Lose weight"
-            Command="{Binding SelectGoalCommand}"
-            CommandParameter="Lose weight"
-            Margin="0,4"/>
-        <Button Content="Improve condition"
-            Command="{Binding SelectGoalCommand}"
-            CommandParameter="Improve condition"
-            Margin="0,4"/>
-        <Button Content="Build muscle"
-            Command="{Binding SelectGoalCommand}"
-            CommandParameter="Build muscle"
-            Margin="0,4"/>
+        <Button Content="Endurance (Cardio)"
+        Command="{Binding SelectGoalCommand}"
+        CommandParameter="1" />
+        <Button Content="Strength"
+        Command="{Binding SelectGoalCommand}"
+        CommandParameter="2" />
+        <Button Content="Hypertrophy"
+        Command="{Binding SelectGoalCommand}"
+        CommandParameter="3" />
+        <Button Content="Maintenance"
+        Command="{Binding SelectGoalCommand}"
+        CommandParameter="4" />
+        <Button Content="General Fitness"
+        Command="{Binding SelectGoalCommand}"
+        CommandParameter="5" />
+        <Button Content="Flexibility / Mobility"
+        Command="{Binding SelectGoalCommand}"
+        CommandParameter="6" />
+
     </StackPanel>
 </UserControl>
 

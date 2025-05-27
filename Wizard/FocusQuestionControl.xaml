@@ -23,15 +23,15 @@
             <Button Content="Upper Body"
               Command="{Binding SelectFocusCommand}"
               CommandParameter="Upper body"
-              Margin="0,4"/>
+              Margin="0,5"/>
             <Button Content="Lower Body"
               Command="{Binding SelectFocusCommand}"
               CommandParameter="Lower body"
-              Margin="0,4"/>
+              Margin="0,5"/>
             <Button Content="Full Body"
               Command="{Binding SelectFocusCommand}"
               CommandParameter="Full body"
-              Margin="0,4"/>
+              Margin="0,5"/>
         </StackPanel>
 
         <!-- Expander for specific muscles -->

@@ -19,6 +19,12 @@ namespace Gymplanner.Windows
         {
             InitializeComponent();
         }
+        private readonly int CurrentUserId;
+        public MainWindow(int userId)
+        {
+            CurrentUserId = userId;
+            InitializeComponent();
+        }
 
         private void Login_Click(object sender, RoutedEventArgs e)
         {
@@ -36,8 +42,7 @@ namespace Gymplanner.Windows
         {
             // Optionally hide the main window:
             // this.Hide();
-
-            var wizard = new WizardWindow();
+            var wizard = new WizardWindow(CurrentUserId);
             wizard.Owner = this;             // sets MainWindow as the owner
             wizard.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             wizard.ShowDialog();             // modal

@@ -18,6 +18,8 @@ namespace Gymplanner.Wizard
 
     public class WizardViewModel : INotifyPropertyChanged
     {
+        private readonly Data _repo = new Data();
+        private readonly int _userId;
         // 1) The list of steps
         public ObservableCollection<Questions> Steps { get; }
             = new ObservableCollection<Questions>(
@@ -36,6 +38,9 @@ namespace Gymplanner.Wizard
                 OnPropertyChanged(nameof(CurrentStep));
             }
         }
+
+        public int SelectedGoalId { get; private set; }
+        public int SelectedLevelId { get; private set; }
         public Questions CurrentStep => Steps[CurrentIndex];
 
         // 3) Navigation commands
@@ -43,13 +48,17 @@ namespace Gymplanner.Wizard
         public ICommand PrevCommand { get; }
 
         // 4) Selection commands for the first half of the wizard
-        public ICommand SelectLevelCommand { get; }
-        public ICommand SelectGoalCommand { get; }
+        public ICommand SelectGoalCommand =>
+        new RelayCommand(p => { SelectedGoalId = Convert.ToInt32(p); AdvanceStep(); });
+
+        public ICommand SelectLevelCommand =>
+        new RelayCommand(p => { SelectedLevelId = Convert.ToInt32(p); AdvanceStep(); });
         public ICommand SelectSessionsCommand { get; }
         public ICommand SelectDurationCommand { get; }
         public ICommand SelectFocusCommand { get; }
         public ICommand CommitMuscleSelectionCommand { get; }
         public ICommand ToggleMuscleCommand { get; }
+        public ICommand FinishCommand { get; }
 
         // 6) Data holders for the user’s answers
         public string SelectedLevel { get; private set; }
@@ -81,11 +90,10 @@ namespace Gymplanner.Wizard
         public ObservableCollection<string> SelectedMuscles { get; }
             = new ObservableCollection<string>();
 
-        public WizardViewModel()
+        public WizardViewModel(int userId)
         {
+            _userId = userId;
             // wire up the basic selection commands (auto‐advance)
-            SelectLevelCommand = new RelayCommand(p => { SelectedLevel = p?.ToString(); AdvanceStep(); });
-            SelectGoalCommand = new RelayCommand(p => { SelectedGoal = p?.ToString(); AdvanceStep(); });
             SelectSessionsCommand = new RelayCommand(p => { SelectedSessions = p?.ToString(); AdvanceStep(); });
             SelectDurationCommand = new RelayCommand(p => { SelectedDuration = p?.ToString(); AdvanceStep(); });
             SelectFocusCommand = new RelayCommand(p => { SelectedFocus = p?.ToString(); /* do NOT advance here if you want them to pick muscles too */ });
@@ -105,6 +113,29 @@ namespace Gymplanner.Wizard
             // standard next/prev (if you still need them)
             NextCommand = new RelayCommand(_ => AdvanceStep(), _ => CurrentIndex < Steps.Count - 1);
             PrevCommand = new RelayCommand(_ => RetreatStep(), _ => CurrentIndex > 0);
+
+            FinishCommand = new RelayCommand(_ =>
+            {
+                int prefId = _repo.InsertUserPreferences(
+                    userId: _userId,
+                    goalId: SelectedGoalId,
+                    levelId: SelectedLevelId,
+                    availableDaysPerWeek: int.Parse(SelectedSessions),
+                    sessionDurationMinutes: int.Parse(SelectedDuration.Split(' ')[0]),
+                    muscleGroupNames: SelectedMuscles
+                );
+
+
+                if (prefId > 0)
+                {
+                    // success handling
+                }
+                else
+                {
+                    // error handling
+                }
+            },
+            _ => CurrentStep == Questions.Focus);
         }
 
         private void AdvanceStep()
@@ -143,6 +174,8 @@ namespace Gymplanner.Wizard
             add => CommandManager.RequerySuggested += value;
             remove => CommandManager.RequerySuggested -= value;
         }
+
+
     }
 }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Gymplanner.CS;
 using MySqlConnector;
 
@@ -288,5 +289,50 @@ namespace Gymplanner
 
             return true;
         }
+
+        // Wizard/ Genereren van schema's:
+        public int QuerySingleInt(string query)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            using var cmd = new MySqlCommand(query, conn);
+
+            conn.Open();
+            var result = cmd.ExecuteScalar();
+            return result != null ? Convert.ToInt32(result) : -1;
+        }
+        // 1. User preferences opslaan
+        public int InsertUserPreferences(
+            int userId,
+            int goalId,
+            int levelId,
+            int availableDaysPerWeek,
+            int sessionDurationMinutes,
+            IEnumerable<string> muscleGroupNames)
+        {
+            // 1) Insert into user_preferences with the FKs directly
+            var prefQuery = $@"
+                INSERT INTO user_preferences
+                  (id, user_id, goal_id, fitness_level_id, available_days_per_week, session_duration_minutes)
+                VALUES
+                  (NULL, {userId}, {goalId}, {levelId}, {availableDaysPerWeek}, {sessionDurationMinutes});
+            ";
+            int prefId = Insert(prefQuery);
+            if (prefId< 0) return -1;
+
+            // 2) Link each muscle by name→id lookup
+            foreach (var mgName in muscleGroupNames)
+            {
+              var mgId = QuerySingleInt(
+                $"SELECT id FROM muscle_groups WHERE name = '{mgName.Replace("'", "''")}' LIMIT 1;");
+              if (mgId > 0)
+              {
+                Insert($@"INSERT INTO preference_muscle_groups
+                      (preference_id, muscle_group_id)
+                      VALUES ({prefId}, {mgId});");
+              }
+            }
+            return prefId;
+        }
+
     }
 }

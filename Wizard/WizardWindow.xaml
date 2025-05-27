@@ -34,11 +34,6 @@
         </DataTemplate>
     </Window.Resources>
 
-    <!-- hook up your VM -->
-    <Window.DataContext>
-        <vm:WizardViewModel/>
-    </Window.DataContext>
-
     <StackPanel Margin="16">
 
         <!-- 1) Step indicator -->

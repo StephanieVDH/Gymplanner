@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Gymplanner.CS;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -54,7 +55,10 @@ namespace Gymplanner.Windows
                 return;
             }
 
-            var main = new MainWindow();
+            var repo = new Data();
+            int userId = repo.QuerySingleInt($"SELECT id FROM users WHERE email = '{email.Replace("'", "''")}' LIMIT 1;");
+
+            var main = new MainWindow(userId);
             main.Show();
             this.Close();
         }

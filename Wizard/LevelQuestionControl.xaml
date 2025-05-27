@@ -11,21 +11,16 @@
         Margin="0,0,0,12"/>
 
         <!-- Replace these with however many choices you have -->
-        <Button 
-        Content="Beginner" 
-        Command="{Binding SelectLevelCommand}" 
-        CommandParameter="Beginner" 
-        Margin="0,4"/>
-        <Button 
-        Content="Intermediate" 
-        Command="{Binding SelectLevelCommand}" 
-        CommandParameter="Intermediate" 
-        Margin="0,4"/>
-        <Button 
-        Content="Advanced" 
-        Command="{Binding SelectLevelCommand}" 
-        CommandParameter="Advanced" 
-        Margin="0,4"/>
+        <Button Content="Beginner"
+        Command="{Binding SelectLevelCommand}"
+        CommandParameter="1" />
+        <Button Content="Intermediate"
+        Command="{Binding SelectLevelCommand}"
+        CommandParameter="2" />
+        <Button Content="Advanced"
+        Command="{Binding SelectLevelCommand}"
+        CommandParameter="3" />
+
     </StackPanel>
 </UserControl>
 

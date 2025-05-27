@@ -11,18 +11,18 @@
         <Button Content="30 minutes"
             Command="{Binding SelectDurationCommand}"
             CommandParameter="30 minutes"
-            Margin="0,4"/>
+            Margin="0,5"/>
         <Button Content="45 minutes"
             Command="{Binding SelectDurationCommand}"
             CommandParameter="45 minutes"
-            Margin="0,4"/>
+            Margin="0,5"/>
         <Button Content="60 minutes"
             Command="{Binding SelectDurationCommand}"
             CommandParameter="60 minutes"
-            Margin="0,4"/>
+            Margin="0,5"/>
         <Button Content="90 minutes"
             Command="{Binding SelectDurationCommand}"
             CommandParameter="90 minutes"
-            Margin="0,4"/>
+            Margin="0,5"/>
     </StackPanel>
 </UserControl>
