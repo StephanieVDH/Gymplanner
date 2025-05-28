@@ -71,16 +71,43 @@
         Style="{StaticResource FocusButtonStyle}"/>
         </StackPanel>
 
-        <!-- Expander for specific muscles (unchanged) -->
+        <!-- 2) Or pick specific muscles -->
         <Expander Header="…or pick specific muscles" Margin="0,16,0,0">
             <StackPanel>
+
                 <ItemsControl ItemsSource="{Binding AllMuscleOptions}">
-                    <!-- ... checkbox template ... -->
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox Content="{Binding Name}">
+                                <CheckBox.IsChecked>
+                                    <MultiBinding 
+                    Converter="{StaticResource ListContainsConverter}"
+                    Mode="OneWay">
+                                        <!-- 1st: the VM’s selected‐IDs list -->
+                                        <Binding 
+                      Path="DataContext.SelectedMuscleIds"
+                      RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                        <!-- 2nd: this item’s own Id -->
+                                        <Binding Path="Id"/>
+                                    </MultiBinding>
+                                </CheckBox.IsChecked>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <i:InvokeCommandAction
+                      Command="{Binding 
+                         DataContext.ToggleMuscleCommand,
+                         RelativeSource={RelativeSource AncestorType=UserControl}}"
+                      CommandParameter="{Binding Id}" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </CheckBox>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </StackPanel>
         </Expander>
 
-        <Button Content="Done"
+             <Button Content="Done"
             Command="{Binding FinishCommand}"
             Margin="0,16,0,0"
             HorizontalAlignment="Right"/>
