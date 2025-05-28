@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GymPlanner.CS;
+using GymPlanner.Windows;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -176,13 +178,32 @@ namespace Gymplanner.Wizard
 
                 if (prefId > 0)
                 {
-                    // TODO: notify success / close window
-                    System.Windows.MessageBox.Show(
-                    "Your workout preferences have been saved!",
-                    "Success",
-                    System.Windows.MessageBoxButton.OK,
-                    System.Windows.MessageBoxImage.Information);
-                    CloseAction?.Invoke();
+                    try
+                    {
+                        // 1) generate schedule
+                        var connStr = "datasource=127.0.0.1;port=3306;username=root;password=;database=gymplanner;";
+                        var generator = new ScheduleGenerator(connStr);
+                        generator.GenerateForUser(_userId);
+                        // 2) Open the ScheduleWindow for this user
+                        var scheduleWin = new ScheduleWindow(_userId);
+                        scheduleWin.Show();
+
+                        /* notify success / close window
+                        System.Windows.MessageBox.Show(
+                        "Your workout preferences have been saved!",
+                        "Success",
+                        System.Windows.MessageBoxButton.OK,
+                        System.Windows.MessageBoxImage.Information); */
+                        CloseAction?.Invoke();
+                    }
+                    catch 
+                    {
+                        System.Windows.MessageBox.Show(
+                           $"Preferences saved but failed to generate schedule",
+                           "Error",
+                           System.Windows.MessageBoxButton.OK,
+                           System.Windows.MessageBoxImage.Error);
+                    }
                 }
                 else
                 {
