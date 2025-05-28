@@ -39,19 +39,6 @@ namespace Gymplanner.Windows
             profileWindow.Show();
         }
 
-        private void StartWizard_Click(object sender, RoutedEventArgs e)
-        {
-            // Optionally hide the main window:
-            // this.Hide();
-            var wizard = new WizardWindow(CurrentUserId);
-            wizard.Owner = this;             // sets MainWindow as the owner
-            wizard.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            wizard.ShowDialog();             // modal
-
-            // After wizard closes, you can Show() or Close() this again:
-            // this.Show();
-        }
-
         private void AdminButton_Click(object sender, RoutedEventArgs e)
         {
             // Open as a standalone window

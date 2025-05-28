@@ -210,7 +210,7 @@ namespace Gymplanner.Windows
         {
             try
             {
-                WizardWindow wizardWindow = new WizardWindow();
+                WizardWindow wizardWindow = new WizardWindow(userProfile.User.Id);
 
                 // Set the owner to maintain proper window hierarchy
                 wizardWindow.Owner = this;
