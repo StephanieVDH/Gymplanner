@@ -292,7 +292,7 @@ namespace Gymplanner.Windows
                     "• Your workout preferences\n" +
                     "• Your workout history\n" +
                     "• Your profile data\n\n" +
-                    "This action cannot be easily undone.",
+                    "This action cannot be undone.",
                     "Confirm Account Deletion",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning);
@@ -313,19 +313,9 @@ namespace Gymplanner.Windows
                 {
                     var db = new Data();
 
-                    // Perform soft delete
-                    if (db.SoftDeleteUser(userProfile.User.Id))
+                    if (db.DeleteUser(userProfile.User.Id))
                     {
-                        MessageBox.Show(
-                            "Your account has been successfully deactivated.\n\n" +
-                            "Thank you for using our app. If you ever want to reactivate your account, " +
-                            "please contact support.",
-                            "Account Deleted",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Information);
-
-                        // Close this window and return to login
-                        // You might want to navigate back to login window here
+                        MessageBox.Show("Your account has been successfully deleted");
                         this.Close();
                     }
                     else
