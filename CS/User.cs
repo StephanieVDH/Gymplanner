@@ -13,7 +13,8 @@ namespace Gymplanner.CS
         public string Email { get; set; }
         public string PasswordHash { get; set; }
         //public DateOnly? DateOfBirth { get; set; }
-        public string Role { get; set; } 
+        public string Role { get; set; }
+        public DateTime UpdatedAt { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now; // Default to current date and time
 
@@ -25,5 +26,34 @@ namespace Gymplanner.CS
             Email = email;
             PasswordHash = passwordhash;
         }
+
+        public class UserPreferences
+        {
+            public int Id { get; set; }
+            public int UserId { get; set; }
+            public string GoalName { get; set; }
+            public string FitnessLevel { get; set; }
+            public int AvailableDaysPerWeek { get; set; }
+            public int SessionDurationMinutes { get; set; }
+            public DateTime CreatedAt { get; set; }
+        }
+
+        public class UserStats
+        {
+            public int WorkoutsCompleted { get; set; }
+            public int CurrentStreak { get; set; }
+            public double TotalHours { get; set; }
+        }
+
+        public class UserProfile
+        {
+            public User User { get; set; }
+            public UserPreferences Preferences { get; set; }
+            public UserStats Stats { get; set; }
+        }
+
+
     }
 }
+
+

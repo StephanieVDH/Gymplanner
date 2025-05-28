@@ -32,7 +32,6 @@ namespace Gymplanner.Windows
                 MessageBox.Show("Please enter your email.");
                 return;
             }
-
             if (password == "")
             {
                 MessageBox.Show("Please enter your password.");
@@ -55,12 +54,19 @@ namespace Gymplanner.Windows
                 return;
             }
 
-            var repo = new Data();
-            int userId = repo.QuerySingleInt($"SELECT id FROM users WHERE email = '{email.Replace("'", "''")}' LIMIT 1;");
-
-            var main = new MainWindow(userId);
-            main.Show();
-            this.Close();
+            // Get user information for the logged-in user
+            var user = db.GetUserByEmailForProfile(email);
+            if (user != null)
+            {
+                // Pass user data to ProfileWindow
+                var profileWindow = new ProfileWindow(user);
+                profileWindow.Show();
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Error retrieving user information.");
+            }
         }
 
         private void Register_Click(object sender, RoutedEventArgs e)

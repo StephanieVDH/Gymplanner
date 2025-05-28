@@ -56,7 +56,136 @@ namespace Gymplanner
                 return -1;
             }
         }
+        public Gymplanner.CS.User GetUserByEmailForProfile(string email)
+        {
+            Gymplanner.CS.User user = null;
+            string query = "SELECT id, username, email, created_at, updated_at FROM users WHERE email = @email";
 
+            try
+            {
+                using (var connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@email", email);
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                user = new Gymplanner.CS.User
+                                {
+                                    Id = reader.GetInt32("id"),
+                                    Username = reader.GetString("username"),
+                                    Email = reader.GetString("email"),
+                                    CreatedAt = reader.GetDateTime("created_at"),
+                                    UpdatedAt = reader.GetDateTime("updated_at")
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error getting user by email: {ex.Message}");
+                Console.WriteLine($"Error getting user by email: {ex.Message}");
+            }
+
+            return user;
+        }
+
+        /// <summary>
+        /// Gets user preferences with goal and fitness level names
+        /// </summary>
+        public Gymplanner.CS.User.UserPreferences GetUserPreferences(int userId)
+        {
+            Gymplanner.CS.User.UserPreferences preferences = null;
+            string query = @"
+                SELECT up.id, up.user_id, g.name as goal_name, fl.name as fitness_level, 
+                       up.available_days_per_week, up.session_duration_minutes, up.created_at
+                FROM user_preferences up
+                JOIN goals g ON up.goal_id = g.id
+                JOIN fitness_levels fl ON up.level_id = fl.id
+                WHERE up.user_id = @userId
+                ORDER BY up.created_at DESC
+                LIMIT 1";
+
+            try
+            {
+                using (var connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@userId", userId);
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                preferences = new Gymplanner.CS.User.UserPreferences
+                                {
+                                    Id = reader.GetInt32("id"),
+                                    UserId = reader.GetInt32("user_id"),
+                                    GoalName = reader.GetString("goal_name"),
+                                    FitnessLevel = reader.GetString("fitness_level"),
+                                    AvailableDaysPerWeek = reader.GetInt32("available_days_per_week"),
+                                    SessionDurationMinutes = reader.GetInt32("session_duration_minutes"),
+                                    CreatedAt = reader.GetDateTime("created_at")
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error getting user preferences: {ex.Message}");
+                Console.WriteLine($"Error getting user preferences: {ex.Message}");
+            }
+
+            return preferences;
+        }
+
+        /// <summary>
+        /// Gets user workout statistics
+        /// (Currently returns default values - implement when you add workout tracking)
+        /// </summary>
+        public Gymplanner.CS.User.UserStats GetUserStats(int userId)
+        {
+            // Since you don't have workout tracking tables yet, return default values
+            // You can implement this properly when you add workout tracking functionality
+            return new Gymplanner.CS.User.UserStats
+            {
+                WorkoutsCompleted = 0,
+                CurrentStreak = 0,
+                TotalHours = 0.0
+            };
+        }
+
+        /// <summary>
+        /// Gets complete user profile with all related data
+        /// </summary>
+        public Gymplanner.CS.User.UserProfile GetCompleteUserProfile(string email)
+        {
+            var user = GetUserByEmailForProfile(email);
+            if (user == null) return null;
+
+            var preferences = GetUserPreferences(user.Id);
+            var stats = GetUserStats(user.Id);
+
+            return new Gymplanner.CS.User.UserProfile
+            {
+                User = user,
+                Preferences = preferences,
+                Stats = stats
+            };
+        }
+        // =============================================================================
+        // YOUR EXISTING METHODS BELOW - UNCHANGED
+        // =============================================================================
 
         // USERS:
         // 1. Registreren 
@@ -80,7 +209,7 @@ namespace Gymplanner
 
             conn.Open();
             var result = cmd.ExecuteScalar();
-            return result as string;   
+            return result as string;
         }
 
         //2. User overview voor admin page
@@ -120,6 +249,118 @@ namespace Gymplanner
         {
             string sql = $"DELETE FROM users WHERE id = {userId};";
             return Delete(sql) > 0;
+        }
+
+        public bool UpdateUserPassword(int userId, string newPasswordHash)
+        {
+            string query = "UPDATE users SET password_hash = @passwordHash, updated_at = NOW() WHERE id = @userId";
+
+            try
+            {
+                using (var connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@passwordHash", newPasswordHash);
+                        command.Parameters.AddWithValue("@userId", userId);
+
+                        int rowsAffected = command.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating password: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Soft delete user account by setting deleted_at timestamp
+        /// Note: You'll need to add a 'deleted_at' column to your users table
+        /// ALTER TABLE users ADD COLUMN deleted_at DATETIME NULL;
+        /// </summary>
+        public bool SoftDeleteUser(int userId)
+        {
+            string query = "UPDATE users SET deleted_at = NOW(), updated_at = NOW() WHERE id = @userId";
+
+            try
+            {
+                using (var connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@userId", userId);
+
+                        int rowsAffected = command.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error soft deleting user: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Check if user account exists and is not deleted
+        /// </summary>
+        public bool IsUserActive(int userId)
+        {
+            string query = "SELECT COUNT(*) FROM users WHERE id = @userId AND deleted_at IS NULL";
+
+            try
+            {
+                using (var connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@userId", userId);
+
+                        int count = Convert.ToInt32(command.ExecuteScalar());
+                        return count > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error checking user status: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Verify current password before allowing reset
+        /// </summary>
+        public bool VerifyCurrentPassword(int userId, string currentPasswordHash)
+        {
+            string query = "SELECT password_hash FROM users WHERE id = @userId AND deleted_at IS NULL";
+
+            try
+            {
+                using (var connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@userId", userId);
+
+                        var storedHash = command.ExecuteScalar() as string;
+                        return storedHash != null && storedHash == currentPasswordHash;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error verifying password: {ex.Message}");
+                return false;
+            }
         }
 
 

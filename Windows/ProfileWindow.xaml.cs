@@ -13,142 +13,196 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Gymplanner.CS;
+using Gymplanner.Wizard; // Add this using statement for WizardWindow
+using static Gymplanner.CS.User;
 
 namespace Gymplanner.Windows
 {
-    ///  THIS IS A TEMPLATE STILL NEED TO EDIT IT 
-    
     public partial class ProfileWindow : Window
     {
-        // Properties to hold user data
-        public string Username { get; set; }
-        public string Email { get; set; }
-        public string FitnessLevel { get; set; }
-        public string WorkoutDays { get; set; }
-        public string Goal { get; set; }
-        public bool HasCompletedQuestionnaire { get; set; }
+        private UserProfile userProfile;
 
-        public ProfileWindow((string username, string email, bool hasCompletedQuestionnaire = false,
-                           string fitnessLevel = "", string workoutDays = "", string goal = "")
+        // Constructor that accepts user data
+        public ProfileWindow(User user)
         {
             InitializeComponent();
-
-            Username = username;
-            Email = email;
-            HasCompletedQuestionnaire = hasCompletedQuestionnaire;
-            FitnessLevel = fitnessLevel;
-            WorkoutDays = workoutDays;
-            Goal = goal;
-
-            LoadUserData();
+            LoadUserProfile(user);
         }
 
-
-        private void LoadUserData()
+        // Keep the default constructor for design-time support
+        public ProfileWindow()
         {
-            // Display user information
-            UsernameDisplay.Text = Username ?? "Not logged in";
-            EmailDisplay.Text = Email ?? "No email";
-
-            // Show/hide preferences section based on questionnaire completion
-            if (HasCompletedQuestionnaire && !string.IsNullOrEmpty(FitnessLevel))
-            {
-                PreferencesSection.Visibility = Visibility.Visible;
-                FitnessLevelDisplay.Text = FitnessLevel;
-                WorkoutDaysDisplay.Text = WorkoutDays;
-                GoalDisplay.Text = Goal;
-            }
-            else
-            {
-                PreferencesSection.Visibility = Visibility.Collapsed;
-            }
-
-            // Load saved profile picture if exists
-            LoadProfilePicture();
+            InitializeComponent();
+            LoadDefaultData();
         }
 
-        private void LoadProfilePicture()
+        private void LoadUserProfile(User user)
         {
             try
             {
-                // Try to load saved profile picture from app data folder
-                string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                string gymPlannerFolder = Path.Combine(appDataPath, "GymPlanner");
-                string profilePicturePath = Path.Combine(gymPlannerFolder, $"{Username}_profile.jpg");
+                var db = new Data();
+                userProfile = db.GetCompleteUserProfile(user.Email);
 
-                if (File.Exists(profilePicturePath))
+                if (userProfile != null)
                 {
-                    BitmapImage bitmap = new BitmapImage();
-                    bitmap.BeginInit();
-                    bitmap.UriSource = new Uri(profilePicturePath, UriKind.Absolute);
-                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmap.EndInit();
-                    ProfileImageBrush.ImageSource = bitmap;
+                    DisplayUserData();
+                }
+                else
+                {
+                    MessageBox.Show("Error loading user profile data.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    LoadDefaultData();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading profile picture: {ex.Message}", "Error",
-                              MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"Error loading user profile: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                LoadDefaultData();
             }
+        }
+
+        private void DisplayUserData()
+        {
+            try
+            {
+                // User Information
+                UsernameDisplay.Text = userProfile.User.Username;
+                EmailDisplay.Text = userProfile.User.Email;
+                MemberSinceDisplay.Text = userProfile.User.CreatedAt.ToString("MMMM yyyy");
+
+                // User Preferences
+                if (userProfile.Preferences != null)
+                {
+                    FitnessLevelDisplay.Text = CapitalizeFirstLetter(userProfile.Preferences.FitnessLevel);
+                    WorkoutDaysDisplay.Text = $"{userProfile.Preferences.AvailableDaysPerWeek} days/week";
+                    GoalDisplay.Text = CapitalizeFirstLetter(userProfile.Preferences.GoalName);
+
+                    // Calculate preferred time based on session duration (you can modify this logic)
+                    string preferredTime = GetPreferredTimeDisplay(userProfile.Preferences.SessionDurationMinutes);
+                    PreferredTimeDisplay.Text = preferredTime;
+
+                    // Show preferences section
+                    PreferencesSection.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    // Hide preferences section if no data
+                    PreferencesSection.Visibility = Visibility.Collapsed;
+                }
+
+                // Workout Statistics
+                if (userProfile.Stats != null)
+                {
+                    WorkoutsCompletedDisplay.Text = userProfile.Stats.WorkoutsCompleted.ToString();
+                    CurrentStreakDisplay.Text = $"{userProfile.Stats.CurrentStreak} days";
+                    TotalHoursDisplay.Text = $"{userProfile.Stats.TotalHours:F1} hours";
+                }
+                else
+                {
+                    WorkoutsCompletedDisplay.Text = "0";
+                    CurrentStreakDisplay.Text = "0 days";
+                    TotalHoursDisplay.Text = "0.0 hours";
+                }
+
+                // Handle missing image gracefully
+                HandleProfileImage();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error displaying user data: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void LoadDefaultData()
+        {
+            // Fallback data if database load fails
+            try
+            {
+                UsernameDisplay.Text = "User";
+                EmailDisplay.Text = "No email";
+                MemberSinceDisplay.Text = "Unknown";
+                FitnessLevelDisplay.Text = "Not set";
+                WorkoutDaysDisplay.Text = "Not set";
+                GoalDisplay.Text = "Not set";
+                PreferredTimeDisplay.Text = "Not set";
+                WorkoutsCompletedDisplay.Text = "0";
+                CurrentStreakDisplay.Text = "0 days";
+                TotalHoursDisplay.Text = "0.0 hours";
+
+                // Hide preferences section
+                PreferencesSection.Visibility = Visibility.Collapsed;
+
+                HandleProfileImage();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading default data: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void HandleProfileImage()
+        {
+            try
+            {
+                // Try to load the image, if it fails, set a fallback
+                if (ProfileImageBrush.ImageSource == null)
+                {
+                    // Create a fallback colored brush
+                    ProfileImageBrush.ImageSource = null;
+                    // You could also set a solid color fill here instead
+                }
+            }
+            catch (Exception ex)
+            {
+                // If image loading fails, continue without it
+                System.Diagnostics.Debug.WriteLine($"Could not load profile image: {ex.Message}");
+            }
+        }
+
+        private string CapitalizeFirstLetter(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            return char.ToUpper(input[0]) + input.Substring(1).ToLower();
+        }
+
+        private string GetPreferredTimeDisplay(int sessionDurationMinutes)
+        {
+            // You can customize this logic based on your requirements
+            // For now, we'll map duration to time preferences
+            if (sessionDurationMinutes <= 30)
+                return "Quick Session (≤30 min)";
+            else if (sessionDurationMinutes <= 60)
+                return "Standard Session (30-60 min)";
+            else if (sessionDurationMinutes <= 90)
+                return "Extended Session (60-90 min)";
+            else
+                return "Long Session (>90 min)";
         }
 
         private void UploadPictureBtn_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
-            {
-                Title = "Select Profile Picture",
-                Filter = "Image files (*.jpg, *.jpeg, *.png, *.bmp)|*.jpg;*.jpeg;*.png;*.bmp",
-                FilterIndex = 1,
-                RestoreDirectory = true
-            };
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Image files (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg|All files (*.*)|*.*";
 
             if (openFileDialog.ShowDialog() == true)
             {
                 try
                 {
-                    // Load and display the selected image
-                    BitmapImage bitmap = new BitmapImage();
-                    bitmap.BeginInit();
-                    bitmap.UriSource = new Uri(openFileDialog.FileName);
-                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmap.EndInit();
-                    ProfileImageBrush.ImageSource = bitmap;
+                    // For now, just show a message that the image was selected
+                    // You can implement the actual image display logic later
+                    MessageBox.Show($"Image selected: {System.IO.Path.GetFileName(openFileDialog.FileName)}",
+                                  "Image Upload", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                    // Save the image to app data folder
-                    SaveProfilePicture(openFileDialog.FileName);
-
-                    MessageBox.Show("Profile picture updated successfully!", "Success",
-                                  MessageBoxButton.OK, MessageBoxImage.Information);
+                    // TODO: Save the image path to user profile
+                    // You would need to add profile_picture column to users table
+                    // and implement UpdateProfilePicture method in Data class
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error uploading picture: {ex.Message}", "Error",
-                                  MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error loading image: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-            }
-        }
-
-        private void SaveProfilePicture(string sourcePath)
-        {
-            try
-            {
-                string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                string gymPlannerFolder = Path.Combine(appDataPath, "GymPlanner");
-
-                // Create directory if it doesn't exist
-                if (!Directory.Exists(gymPlannerFolder))
-                {
-                    Directory.CreateDirectory(gymPlannerFolder);
-                }
-
-                string destinationPath = Path.Combine(gymPlannerFolder, $"{Username}_profile.jpg");
-                File.Copy(sourcePath, destinationPath, true);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error saving profile picture: {ex.Message}", "Error",
-                              MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -156,151 +210,139 @@ namespace Gymplanner.Windows
         {
             try
             {
-                // Check if user has completed questionnaire
-                if (!HasCompletedQuestionnaire)
+                WizardWindow wizardWindow = new WizardWindow();
+
+                // Set the owner to maintain proper window hierarchy
+                wizardWindow.Owner = this;
+
+                // Show as modal dialog - user must complete or cancel wizard
+                bool? result = wizardWindow.ShowDialog();
+
+                if (result == true)
                 {
-                    var result = MessageBox.Show(
-                        "You haven't completed the gym planner questionnaire yet.\n\nWould you like to complete it now to get personalized workout plans?",
-                        "Questionnaire Required",
-                        MessageBoxButton.YesNo,
-                        MessageBoxImage.Question);
+                    // Wizard completed successfully
+                    MessageBox.Show("Workout plan created successfully!", "Success",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
 
-                    if (result == MessageBoxResult.Yes)
+                    // Refresh the user profile data in case preferences were updated
+                    if (userProfile?.User != null)
                     {
-                        // Open questionnaire window
-                        // QuestionnaireWindow questionnaireWindow = new QuestionnaireWindow();
-                        // questionnaireWindow.ShowDialog();
-
-                        // For now, show a placeholder message
-                        MessageBox.Show("Opening questionnaire...", "Navigation",
-                                      MessageBoxButton.OK, MessageBoxImage.Information);
+                        LoadUserProfile(userProfile.User);
                     }
                 }
-                else
+                else if (result == false)
                 {
-                    // Open gym planner window
-                    // GymPlannerMainWindow gymPlannerWindow = new GymPlannerMainWindow();
-                    // gymPlannerWindow.Show();
-
-                    // For now, show a placeholder message
-                    MessageBox.Show("Opening gym planner...", "Navigation",
-                                  MessageBoxButton.OK, MessageBoxImage.Information);
+                    // Wizard was cancelled
+                    // No action needed, just return to profile
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error navigating to gym planner: {ex.Message}", "Error",
-                              MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error opening Workout Wizard: {ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void ResetPasswordBtn_Click(object sender, RoutedEventArgs e)
         {
-            var result = MessageBox.Show(
-                "Are you sure you want to reset your password?\n\nA password reset email will be sent to your registered email address.",
-                "Confirm Password Reset",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
+            try
             {
-                try
+                if (userProfile?.User == null)
                 {
-                    // Here you would typically call your authentication service
-                    // AuthService.SendPasswordResetEmail(Email);
+                    MessageBox.Show("User data not available. Please try refreshing the profile.",
+                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
 
-                    MessageBox.Show(
-                        $"Password reset instructions have been sent to {Email}\n\nPlease check your email and follow the instructions to reset your password.",
-                        "Password Reset Sent",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information);
-                }
-                catch (Exception ex)
+                // Open password reset dialog
+                PasswordResetDialog resetDialog = new PasswordResetDialog(userProfile.User);
+                resetDialog.Owner = this;
+
+                bool? result = resetDialog.ShowDialog();
+
+                if (result == true)
                 {
-                    MessageBox.Show($"Error sending password reset: {ex.Message}", "Error",
-                                  MessageBoxButton.OK, MessageBoxImage.Error);
+                    // Password was successfully reset
+                    // Optionally refresh user data or show additional confirmation
+                    LoadUserProfile(userProfile.User);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening password reset dialog: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void DeleteAccountBtn_Click(object sender, RoutedEventArgs e)
         {
-            var result = MessageBox.Show(
-                "⚠️ WARNING ⚠️\n\nThis action will permanently delete your account and all associated data including:\n\n• Your profile information\n• Workout plans and history\n• All preferences and settings\n\nThis action CANNOT be undone!\n\nAre you absolutely sure you want to delete your account?",
-                "Confirm Account Deletion",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
-
-            if (result == MessageBoxResult.Yes)
+            try
             {
-                // Second confirmation
-                var finalConfirmation = MessageBox.Show(
-                    "This is your final confirmation.\n\nType your username to confirm account deletion.\n\nDo you really want to delete your account permanently?",
-                    "Final Confirmation Required",
+                if (userProfile?.User == null)
+                {
+                    MessageBox.Show("User data not available. Please try refreshing the profile.",
+                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                // First confirmation
+                MessageBoxResult firstConfirm = MessageBox.Show(
+                    "Are you sure you want to delete your account?\n\n" +
+                    "This will permanently deactivate your account and you will lose access to:\n" +
+                    "• Your workout preferences\n" +
+                    "• Your workout history\n" +
+                    "• Your profile data\n\n" +
+                    "This action cannot be easily undone.",
+                    "Confirm Account Deletion",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                if (firstConfirm != MessageBoxResult.Yes)
+                    return;
+
+                // Second confirmation for safety
+                MessageBoxResult finalConfirm = MessageBox.Show(
+                    $"This is your final confirmation.\n\n" +
+                    $"Delete account for: {userProfile.User.Email}?\n\n" +
+                    "Type your username and click Yes to proceed.",
+                    "FINAL CONFIRMATION",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Stop);
 
-                if (finalConfirmation == MessageBoxResult.Yes)
+                if (finalConfirm == MessageBoxResult.Yes)
                 {
-                    try
+                    var db = new Data();
+
+                    // Perform soft delete
+                    if (db.SoftDeleteUser(userProfile.User.Id))
                     {
-                        // Here you would call your user service to delete the account
-                        // UserService.DeleteAccount(Username);
-
-                        // Delete local profile picture
-                        DeleteLocalProfileData();
-
                         MessageBox.Show(
-                            "Your account has been successfully deleted.\n\nThank you for using Gym Planner!",
+                            "Your account has been successfully deactivated.\n\n" +
+                            "Thank you for using our app. If you ever want to reactivate your account, " +
+                            "please contact support.",
                             "Account Deleted",
                             MessageBoxButton.OK,
                             MessageBoxImage.Information);
 
-                        // Close profile window and return to login
+                        // Close this window and return to login
+                        // You might want to navigate back to login window here
                         this.Close();
-
-                        // Show login window
-                        // LoginWindow loginWindow = new LoginWindow();
-                        // loginWindow.Show();
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        MessageBox.Show($"Error deleting account: {ex.Message}", "Error",
-                                      MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(
+                            "Failed to delete account. Please try again or contact support if the problem persists.",
+                            "Deletion Failed",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error);
                     }
-                }
-            }
-        }
-
-        private void DeleteLocalProfileData()
-        {
-            try
-            {
-                string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                string gymPlannerFolder = Path.Combine(appDataPath, "GymPlanner");
-                string profilePicturePath = Path.Combine(gymPlannerFolder, $"{Username}_profile.jpg");
-
-                if (File.Exists(profilePicturePath))
-                {
-                    File.Delete(profilePicturePath);
                 }
             }
             catch (Exception ex)
             {
-                // Log error but don't show to user since account is being deleted anyway
-                Console.WriteLine($"Error deleting local profile data: {ex.Message}");
+                MessageBox.Show($"Error deleting account: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        // Method to update user preferences after questionnaire completion
-        public void UpdatePreferences(string fitnessLevel, string workoutDays, string goal)
-        {
-            FitnessLevel = fitnessLevel;
-            WorkoutDays = workoutDays;
-            Goal = goal;
-            HasCompletedQuestionnaire = true;
-
-            LoadUserData(); // Refresh the display
         }
     }
 }

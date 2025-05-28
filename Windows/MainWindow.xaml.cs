@@ -35,7 +35,8 @@ namespace Gymplanner.Windows
 
         private void UserProfile_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Navigate to user profile
+            ProfileWindow profileWindow = new ProfileWindow();
+            profileWindow.Show();
         }
 
         private void StartWizard_Click(object sender, RoutedEventArgs e)
