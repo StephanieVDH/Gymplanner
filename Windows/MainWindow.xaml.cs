@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Gymplanner;
+using Gymplanner.CS;
 using Gymplanner.Wizard;
 
 namespace Gymplanner.Windows
@@ -28,6 +29,7 @@ namespace Gymplanner.Windows
 
         // track login state (optional; you can also use the panels' Visibility)
         private bool _isLoggedIn = false;
+        private User _currentUser;
 
         private void AuthButton_Click(object sender, RoutedEventArgs e)
         {
@@ -38,6 +40,7 @@ namespace Gymplanner.Windows
                 bool? ok = loginWin.ShowDialog();
                 if (ok == true)
                 {
+                    _currentUser = loginWin.LoggedInUser;
                     // 2) swap the visuals in the button
                     LoginPanel.Visibility = Visibility.Collapsed;
                     AvatarPanel.Visibility = Visibility.Visible;
@@ -48,7 +51,7 @@ namespace Gymplanner.Windows
             else
             {
                 // 3) already logged in, open profile
-                var profileWin = new ProfileWindow();
+                var profileWin = new ProfileWindow(_currentUser);
                 profileWin.Owner = this;
                 profileWin.Show();
             }

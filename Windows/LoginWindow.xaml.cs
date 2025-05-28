@@ -17,6 +17,7 @@ namespace Gymplanner.Windows
 {
     public partial class LoginWindow : Window
     {
+        public User? LoggedInUser { get; private set; }
         public LoginWindow()
         {
             InitializeComponent();
@@ -53,11 +54,13 @@ namespace Gymplanner.Windows
                 MessageBox.Show("Invalid password.");
                 return;
             }
-
-            this.DialogResult = true;
-            this.Close();
+        
             // Get user information for the logged-in user
             var user = db.GetUserByEmailForProfile(email);
+            LoggedInUser = user;
+            this.DialogResult = true;
+            this.Close();
+
             if (user != null)
             {
                 // Pass user data to ProfileWindow

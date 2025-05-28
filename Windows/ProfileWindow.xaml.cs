@@ -31,11 +31,13 @@ namespace Gymplanner.Windows
         }
 
         // Keep the default constructor for design-time support
+        /*
         public ProfileWindow()
         {
             InitializeComponent();
             LoadDefaultData();
         }
+        */
 
         private void LoadUserProfile(User user)
         {
