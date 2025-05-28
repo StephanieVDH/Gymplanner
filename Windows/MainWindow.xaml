@@ -2,6 +2,16 @@
        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
        Title="Gymplanner" Height="1006" Width="1000">
+
+    <Window.Resources>
+        <!-- a bare‐bones template that simply shows your ContentPresenter -->
+        <ControlTemplate x:Key="AvatarButtonTemplate" TargetType="Button">
+            <ContentPresenter 
+       HorizontalAlignment="Center"
+       VerticalAlignment="Center"/>
+        </ControlTemplate>
+    </Window.Resources>
+    
     <Grid>
         <!-- Define Rows: Header, Content, Footer -->
         <Grid.RowDefinitions>
@@ -24,36 +34,42 @@
             <!-- Login on the Right -->
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Margin="0,0,10,0" VerticalAlignment="Center">
                 <Button x:Name="AuthButton"
-                    Click="AuthButton_Click"
-                    Width="100" Height="30">
+        Click="AuthButton_Click"
+        Width="100"
+        Height="30">
                     <Button.Style>
                         <Style TargetType="Button">
-                            <!-- default (LOG IN) chrome -->
+                            <!-- default LOG IN look -->
                             <Setter Property="BorderThickness" Value="1"/>
                             <Setter Property="Background"      Value="LightGray"/>
-
                             <Style.Triggers>
-                                <!-- when AvatarPanel shows, strip the chrome -->
+                                <!-- when the avatar is visible, strip off all the normal chrome -->
                                 <DataTrigger Binding="{Binding ElementName=AvatarPanel, Path=Visibility}"
-                     Value="Visible">
+                                    Value="Visible">
+                                    <!-- no border, transparent background -->
                                     <Setter Property="BorderThickness" Value="0"/>
                                     <Setter Property="Background"      Value="Transparent"/>
+                                    <!-- swap in our minimalist template -->
+                                    <Setter Property="Template" 
+                                    Value="{StaticResource AvatarButtonTemplate}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
 
                     <Grid>
-                        <!-- LOGIN state -->
+                        <!-- 1) LOG IN state -->
                         <StackPanel x:Name="LoginPanel" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Image Source="/Gymplanner;component/Images/login_icon.png"
+                                Width="16" Height="16" Margin="0,0,5,0"/>
                             <TextBlock Text="LOG IN" FontWeight="Bold"/>
                         </StackPanel>
 
-                        <!-- PROFILE state -->
+                        <!-- 2) AVATAR state -->
                         <Image x:Name="AvatarPanel"
-                           Source="/Images/avatar.png"
                            Width="32" Height="32"
-                           Visibility="Collapsed"/>
+                           Visibility="Collapsed"
+                           Source="/Images/avatar.png"/>
                     </Grid>
                 </Button>
             </StackPanel>
