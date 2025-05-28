@@ -21,7 +21,7 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <DockPanel Grid.Row="0" Background="#FF7B68EE" Height="60" LastChildFill="False">
+        <DockPanel Grid.Row="0" Background="#F5E6FA" Height="60" LastChildFill="False">
             <!-- Logo on the Left -->
             <Image Source="/Images/Gymplanner_transparent.png"
                    Width="100"
@@ -34,14 +34,15 @@
             <!-- Login on the Right -->
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Margin="0,0,10,0" VerticalAlignment="Center">
                 <Button x:Name="AuthButton"
-        Click="AuthButton_Click"
-        Width="100"
-        Height="30">
+                Click="AuthButton_Click"
+                Width="100"
+                Height="30">
                     <Button.Style>
                         <Style TargetType="Button">
                             <!-- default LOG IN look -->
                             <Setter Property="BorderThickness" Value="1"/>
-                            <Setter Property="Background"      Value="LightGray"/>
+                            <Setter Property="Background"      Value="#B81581"/>
+                            <Setter Property="Foreground"      Value="White" />
                             <Style.Triggers>
                                 <!-- when the avatar is visible, strip off all the normal chrome -->
                                 <DataTrigger Binding="{Binding ElementName=AvatarPanel, Path=Visibility}"
@@ -60,8 +61,6 @@
                     <Grid>
                         <!-- 1) LOG IN state -->
                         <StackPanel x:Name="LoginPanel" Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="/Gymplanner;component/Images/login_icon.png"
-                                Width="16" Height="16" Margin="0,0,5,0"/>
                             <TextBlock Text="LOG IN" FontWeight="Bold"/>
                         </StackPanel>
 
@@ -144,7 +143,7 @@
         </ScrollViewer>
 
         <!-- Footer  (icoontjes toevoegen)-->
-        <DockPanel Grid.Row="2" Background="#FF7B68EE" Height="40">
+        <DockPanel Grid.Row="2" Background="#F5E6FA" Height="40">
             <TextBlock Text="nr.: 046567983     |     Mail: info@gymplanner.com"
                       Foreground="White"
                       VerticalAlignment="Stretch"
