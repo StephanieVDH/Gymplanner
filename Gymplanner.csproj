@@ -28,9 +28,6 @@
     <Resource Include="Images\default-avatar.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Images\eye icon.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Images\Gymplanner_transparent.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>

@@ -1,31 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Security.Cryptography;
+using Microsoft.Win32;
 using Gymplanner.CS;
+using System.Text.RegularExpressions;
 
 namespace Gymplanner.Windows
 {
     public partial class PasswordResetDialog : Window
     {
-        private User currentUser;
-        private Data database;
+        private readonly User currentUser;
+        private readonly Data database;
 
         public PasswordResetDialog(User user)
         {
             InitializeComponent();
             currentUser = user;
             database = new Data();
+
+            ResetButton.Content = "RESET PASSWORD";
 
             // Focus on current password field
             CurrentPasswordBox.Focus();
@@ -39,20 +32,30 @@ namespace Gymplanner.Windows
 
         private void ResetButton_Click(object sender, RoutedEventArgs e)
         {
+            // Reset button label and hide any prior error
+            ResetButton.Content = "RESET PASSWORD";
+            HideErrorMessage();
+
+            // Validate inputs
+            if (!ValidateInputs())
+            {
+                // On validation failure, offer to try again
+                ResetButton.Content = "TRY AGAIN";
+                return;
+            }
             try
             {
-                // Hide any previous error messages
-                HideErrorMessage();
-
-                // Validate inputs
-                if (!ValidateInputs())
+                // 1) Fetch the stored BCrypt hash for this user
+                string storedHash = database.GetPasswordHash(currentUser.Email);
+                if (storedHash == null)
+                {
+                    ShowErrorMessage("Unable to verify current password.");
                     return;
+                }
 
-                // Hash the current password to verify
-                string currentPasswordHash = HashPassword(CurrentPasswordBox.Password);
-
-                // Verify current password
-                if (!database.VerifyCurrentPassword(currentUser.Id, currentPasswordHash))
+                // 2) Verify the current password
+                bool valid = BCrypt.Net.BCrypt.Verify(CurrentPasswordBox.Password, storedHash);
+                if (!valid)
                 {
                     ShowErrorMessage("Current password is incorrect.");
                     CurrentPasswordBox.Focus();
@@ -60,15 +63,14 @@ namespace Gymplanner.Windows
                     return;
                 }
 
-                // Hash the new password
-                string newPasswordHash = HashPassword(NewPasswordBox.Password);
+                // 3) Hash the new password with BCrypt
+                string newHash = BCrypt.Net.BCrypt.HashPassword(NewPasswordBox.Password);
 
-                // Update password in database
-                if (database.UpdateUserPassword(currentUser.Id, newPasswordHash))
+                // 4) Update the database
+                if (database.UpdateUserPassword(currentUser.Id, newHash))
                 {
                     MessageBox.Show("Password reset successfully!", "Success",
                         MessageBoxButton.OK, MessageBoxImage.Information);
-
                     DialogResult = true;
                     Close();
                 }
@@ -85,21 +87,18 @@ namespace Gymplanner.Windows
 
         private bool ValidateInputs()
         {
-            // Check if all fields are filled
             if (string.IsNullOrWhiteSpace(CurrentPasswordBox.Password))
             {
                 ShowErrorMessage("Please enter your current password.");
                 CurrentPasswordBox.Focus();
                 return false;
             }
-
             if (string.IsNullOrWhiteSpace(NewPasswordBox.Password))
             {
                 ShowErrorMessage("Please enter a new password.");
                 NewPasswordBox.Focus();
                 return false;
             }
-
             if (string.IsNullOrWhiteSpace(ConfirmPasswordBox.Password))
             {
                 ShowErrorMessage("Please confirm your new password.");
@@ -107,16 +106,15 @@ namespace Gymplanner.Windows
                 return false;
             }
 
-            // Check password length
-            if (NewPasswordBox.Password.Length < 6)
+            // REGEX VAN REGISTER HERGEBRUIKEN
+            if (!ValidatePassword(NewPasswordBox.Password))
             {
-                ShowErrorMessage("New password must be at least 6 characters long.");
+                ShowErrorMessage("New password must be at least 8 characters long and contain at least one digit.");
                 NewPasswordBox.Focus();
                 NewPasswordBox.SelectAll();
                 return false;
             }
 
-            // Check if new passwords match
             if (NewPasswordBox.Password != ConfirmPasswordBox.Password)
             {
                 ShowErrorMessage("New passwords do not match.");
@@ -124,8 +122,6 @@ namespace Gymplanner.Windows
                 ConfirmPasswordBox.SelectAll();
                 return false;
             }
-
-            // Check if new password is different from current
             if (CurrentPasswordBox.Password == NewPasswordBox.Password)
             {
                 ShowErrorMessage("New password must be different from current password.");
@@ -133,8 +129,14 @@ namespace Gymplanner.Windows
                 NewPasswordBox.SelectAll();
                 return false;
             }
-
             return true;
+        }
+
+        private bool ValidatePassword(string password)
+        {
+            // at least 8 characters and at least one digit
+            const string pattern = @"^(?=.*\d).{8,}$";
+            return Regex.IsMatch(password, pattern);
         }
 
         private void ShowErrorMessage(string message)
@@ -148,37 +150,15 @@ namespace Gymplanner.Windows
             ErrorMessageText.Visibility = Visibility.Collapsed;
         }
 
-        /// <summary>
-        /// Hash password using SHA256 (same method as your registration)
-        /// Note: In production, consider using BCrypt or similar for better security
-        /// </summary>
-        private string HashPassword(string password)
+        // Submit on Enter, cancel on Escape
+        /*protected override void OnKeyDown(KeyEventArgs e)
         {
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < bytes.Length; i++)
-                {
-                    builder.Append(bytes[i].ToString("x2"));
-                }
-                return builder.ToString();
-            }
-        }
-
-        // Handle Enter key press to submit form
-        protected override void OnKeyDown(System.Windows.Input.KeyEventArgs e)
-        {
-            if (e.Key == System.Windows.Input.Key.Enter)
-            {
+            if (e.Key == Key.Enter)
                 ResetButton_Click(this, new RoutedEventArgs());
-            }
-            else if (e.Key == System.Windows.Input.Key.Escape)
-            {
+            else if (e.Key == Key.Escape)
                 CancelButton_Click(this, new RoutedEventArgs());
-            }
 
             base.OnKeyDown(e);
-        }
+        }*/
     }
 }
