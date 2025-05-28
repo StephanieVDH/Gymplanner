@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Gymplanner.Windows.MainWindow"
        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-       Title="Gymplanner" Height="834" Width="1000">
+       Title="Gymplanner" Height="1006" Width="1000">
     <Grid>
         <!-- Define Rows: Header, Content, Footer -->
         <Grid.RowDefinitions>
@@ -47,10 +47,6 @@
                     </Style>
                 </ItemsControl.ItemContainerStyle>
 
-                <Button Content="Start Workout Wizard"
-                       Click="StartWizard_Click"
-                       Margin="16"/>
-                
                 <Button Content="View Profile"
                    Click="UserProfile_Click"
                    Height="40"
