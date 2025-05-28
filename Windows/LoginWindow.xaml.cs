@@ -54,6 +54,8 @@ namespace Gymplanner.Windows
                 return;
             }
 
+            this.DialogResult = true;
+            this.Close();
             // Get user information for the logged-in user
             var user = db.GetUserByEmailForProfile(email);
             if (user != null)

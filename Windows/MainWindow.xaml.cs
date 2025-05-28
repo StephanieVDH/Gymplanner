@@ -26,17 +26,32 @@ namespace Gymplanner.Windows
             InitializeComponent();
         }
 
-        private void Login_Click(object sender, RoutedEventArgs e)
-        {
-            var loginWin = new LoginWindow(); // creëert nieuw login window
-            loginWin.Owner = this;
-            loginWin.ShowDialog(); // toont het login window
-        }
+        // track login state (optional; you can also use the panels' Visibility)
+        private bool _isLoggedIn = false;
 
-        private void UserProfile_Click(object sender, RoutedEventArgs e)
+        private void AuthButton_Click(object sender, RoutedEventArgs e)
         {
-            ProfileWindow profileWindow = new ProfileWindow();
-            profileWindow.Show();
+            if (!_isLoggedIn)
+            {
+                // 1) show login dialog
+                var loginWin = new LoginWindow();
+                bool? ok = loginWin.ShowDialog();
+                if (ok == true)
+                {
+                    // 2) swap the visuals in the button
+                    LoginPanel.Visibility = Visibility.Collapsed;
+                    AvatarPanel.Visibility = Visibility.Visible;
+                    _isLoggedIn = true;
+                }
+                // else: stay on login state
+            }
+            else
+            {
+                // 3) already logged in, open profile
+                var profileWin = new ProfileWindow();
+                profileWin.Owner = this;
+                profileWin.Show();
+            }
         }
 
         private void AdminButton_Click(object sender, RoutedEventArgs e)

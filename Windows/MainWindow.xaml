@@ -23,12 +23,38 @@
 
             <!-- Login on the Right -->
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Margin="0,0,10,0" VerticalAlignment="Center">
-                <Button Content="LOG IN"
-                       Width="80"
-                       Height="30"
-                       Click="Login_Click"/>
-                <Button Width="30" Height="30" Margin="5,0,0,0" Click="UserProfile_Click">
-                    <Image Source="/Assets/user_icon.png" Stretch="Uniform"/>
+                <Button x:Name="AuthButton"
+                    Click="AuthButton_Click"
+                    Width="100" Height="30">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <!-- default (LOG IN) chrome -->
+                            <Setter Property="BorderThickness" Value="1"/>
+                            <Setter Property="Background"      Value="LightGray"/>
+
+                            <Style.Triggers>
+                                <!-- when AvatarPanel shows, strip the chrome -->
+                                <DataTrigger Binding="{Binding ElementName=AvatarPanel, Path=Visibility}"
+                     Value="Visible">
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Background"      Value="Transparent"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+
+                    <Grid>
+                        <!-- LOGIN state -->
+                        <StackPanel x:Name="LoginPanel" Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="LOG IN" FontWeight="Bold"/>
+                        </StackPanel>
+
+                        <!-- PROFILE state -->
+                        <Image x:Name="AvatarPanel"
+                           Source="/Images/avatar.png"
+                           Width="32" Height="32"
+                           Visibility="Collapsed"/>
+                    </Grid>
                 </Button>
             </StackPanel>
         </DockPanel>
@@ -47,20 +73,13 @@
                     </Style>
                 </ItemsControl.ItemContainerStyle>
 
-                <Button Content="View Profile"
-                   Click="UserProfile_Click"
-                   Height="40"
-                   Margin="10,0,0,0"
-                   Background="#FF9C27B0"
-                   Foreground="White"/>
-
                 <Button x:Name="AdminButton"
                     Content="Admin TEST"
                     Width="100"
                     Margin="10,0,0,0"
                     Click="AdminButton_Click"/>
 
-                <TextBlock Text="Make your personalised gymplanner in 5 min!"
+                <TextBlock Text="Make your personalised gym schedule in 5 min!"
                           FontSize="28"
                           FontStyle="Italic"
                           Margin="0,10"/>
@@ -74,7 +93,7 @@
                           FontWeight="Bold"
                           Margin="0,20,0,5"/>
 
-                <TextBlock Text="It's pretty easy, you make an account by clicking on Login and fill in your info. After that you get to the page where we ask you some important questions to make your personalised gym planning. So, what are you waiting for? Let's get started!"
+                <TextBlock Text="It's pretty easy, you make an account and fill in your info. After that you can start the gymplanner, where you'll answer some questions about your current gym habits to generate a custom gym schedule. So, what are you waiting for? Let's get started!"
                           TextWrapping="Wrap"
                           FontSize="18"
                           Margin="0,10,0,10"
