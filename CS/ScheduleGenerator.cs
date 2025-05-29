@@ -203,8 +203,7 @@ namespace GymPlanner.CS
             }
             reader.Close();
             return list;
-        } 
-
+        }
         private (int sets, int reps) MapSetsReps(int goalId)
         {
             // Sets & reps depend solely on the user's goal

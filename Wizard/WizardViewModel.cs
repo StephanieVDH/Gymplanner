@@ -76,19 +76,19 @@ namespace Gymplanner.Wizard
         public ObservableCollection<MuscleOption> AllMuscleOptions { get; }
             = new ObservableCollection<MuscleOption>
             {
-                new MuscleOption { Id = 1,  Name = "Back" },
-                new MuscleOption { Id = 2,  Name = "Chest" },
-                new MuscleOption { Id = 3,  Name = "Shoulders" },
+                new MuscleOption { Id = 6,  Name = "Back" },
+                new MuscleOption { Id = 5,  Name = "Chest" },
+                new MuscleOption { Id = 7,  Name = "Shoulders" },
                 new MuscleOption { Id = 4,  Name = "Core/Abs" },
-                new MuscleOption { Id = 5,  Name = "Biceps" },
-                new MuscleOption { Id = 6,  Name = "Forearms" },
-                new MuscleOption { Id = 7,  Name = "Triceps" },
-                new MuscleOption { Id = 8,  Name = "Calves" },
-                new MuscleOption { Id = 9,  Name = "Glutes" },
-                new MuscleOption { Id = 10, Name = "Hamstrings" },
-                new MuscleOption { Id = 11, Name = "Quadriceps" },
-                new MuscleOption { Id = 12, Name = "Hip Abductors" },
-                new MuscleOption { Id = 13, Name = "Hip Adductors" }
+                new MuscleOption { Id = 8,  Name = "Biceps" },
+                new MuscleOption { Id = 14,  Name = "Forearms" },
+                new MuscleOption { Id = 9,  Name = "Triceps" },
+                new MuscleOption { Id = 13,  Name = "Calves" },
+                new MuscleOption { Id = 12,  Name = "Glutes" },
+                new MuscleOption { Id = 11, Name = "Hamstrings" },
+                new MuscleOption { Id = 10, Name = "Quadriceps" },
+                new MuscleOption { Id = 15, Name = "Hip Abductors" },
+                new MuscleOption { Id = 16, Name = "Hip Adductors" }
             };
 
         public ObservableCollection<int> SelectedMuscleIds { get; }
@@ -165,6 +165,9 @@ namespace Gymplanner.Wizard
                 // parse numeric values
                 int sessions = int.Parse(SelectedSessions);
                 int duration = int.Parse(SelectedDuration.Split(' ')[0]);
+                var focusIds = SelectedMuscleIds.Any()
+                ? SelectedMuscleIds.ToList()          // user picked specific muscles
+                : new List<int> { SelectedFocusId };  // user picked a broad focus
 
                 // insert into user_preferences + join table
                 int prefId = _repo.InsertUserPreferences(
@@ -173,7 +176,7 @@ namespace Gymplanner.Wizard
                     levelId: SelectedLevelId,
                     availableDaysPerWeek: sessions,
                     sessionDurationMinutes: duration,
-                    muscleGroupIds: SelectedMuscleIds
+                    muscleGroupIds: focusIds
                 );
 
                 if (prefId > 0)
