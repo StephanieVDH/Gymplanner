@@ -92,20 +92,6 @@ namespace Gymplanner.Windows
                     PreferencesSection.Visibility = Visibility.Collapsed;
                 }
 
-                // Workout Statistics
-                if (userProfile.Stats != null)
-                {
-                    WorkoutsCompletedDisplay.Text = userProfile.Stats.WorkoutsCompleted.ToString();
-                    CurrentStreakDisplay.Text = $"{userProfile.Stats.CurrentStreak} days";
-                    TotalHoursDisplay.Text = $"{userProfile.Stats.TotalHours:F1} hours";
-                }
-                else
-                {
-                    WorkoutsCompletedDisplay.Text = "0";
-                    CurrentStreakDisplay.Text = "0 days";
-                    TotalHoursDisplay.Text = "0.0 hours";
-                }
-
                 // Handle missing image gracefully
                 HandleProfileImage();
             }
@@ -127,10 +113,6 @@ namespace Gymplanner.Windows
                 WorkoutDaysDisplay.Text = "Not set";
                 GoalDisplay.Text = "Not set";
                 PreferredTimeDisplay.Text = "Not set";
-                WorkoutsCompletedDisplay.Text = "0";
-                CurrentStreakDisplay.Text = "0 days";
-                TotalHoursDisplay.Text = "0.0 hours";
-
                 // Hide preferences section
                 PreferencesSection.Visibility = Visibility.Collapsed;
 

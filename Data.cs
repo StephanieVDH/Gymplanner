@@ -149,38 +149,18 @@ namespace Gymplanner
             return preferences;
         }
 
-        /// <summary>
-        /// Gets user workout statistics
-        /// (Currently returns default values - implement when you add workout tracking)
-        /// </summary>
-        public Gymplanner.CS.User.UserStats GetUserStats(int userId)
-        {
-            // Since you don't have workout tracking tables yet, return default values
-            // You can implement this properly when you add workout tracking functionality
-            return new Gymplanner.CS.User.UserStats
-            {
-                WorkoutsCompleted = 0,
-                CurrentStreak = 0,
-                TotalHours = 0.0
-            };
-        }
-
-        /// <summary>
-        /// Gets complete user profile with all related data
-        /// </summary>
+        // Gets complete user profile with all related data
         public Gymplanner.CS.User.UserProfile GetCompleteUserProfile(string email)
         {
             var user = GetUserByEmailForProfile(email);
             if (user == null) return null;
 
             var preferences = GetUserPreferences(user.Id);
-            var stats = GetUserStats(user.Id);
 
             return new Gymplanner.CS.User.UserProfile
             {
                 User = user,
                 Preferences = preferences,
-                Stats = stats
             };
         }
 

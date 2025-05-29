@@ -38,18 +38,10 @@ namespace Gymplanner.CS
             public DateTime CreatedAt { get; set; }
         }
 
-        public class UserStats
-        {
-            public int WorkoutsCompleted { get; set; }
-            public int CurrentStreak { get; set; }
-            public double TotalHours { get; set; }
-        }
-
         public class UserProfile
         {
             public User User { get; set; }
             public UserPreferences Preferences { get; set; }
-            public UserStats Stats { get; set; }
         }
 
 

@@ -86,26 +86,35 @@ namespace GymPlanner.CS
         {
             var pref = new UserPreference { UserId = userId };
             const string sql = @"
-SELECT up.goal_id, up.level_id, up.available_days_per_week, up.session_duration_minutes
-FROM user_preferences up
-WHERE up.user_id = @uid;";
+                  SELECT goal_id
+                       , level_id
+                       , available_days_per_week
+                       , session_duration_minutes
+                  FROM user_preferences
+                  WHERE user_id = @uid
+                  ORDER BY id DESC
+                  LIMIT 1;";
             using var cmd = new MySqlCommand(sql, conn, tx);
             cmd.Parameters.AddWithValue("@uid", userId);
             using var reader = cmd.ExecuteReader();
-            if (!reader.Read()) throw new Exception("User preferences not found.");
+            if (!reader.Read())
+                throw new Exception("No preferences found for this user.");
             pref.GoalId = reader.GetInt32("goal_id");
             pref.LevelId = reader.GetInt32("level_id");
             pref.AvailableDaysPerWeek = reader.GetInt32("available_days_per_week");
             pref.SessionDuration = reader.GetInt32("session_duration_minutes");
             reader.Close();
 
-            // Load muscle groups
             const string mgSql = @"
             SELECT pmg.muscle_group_id
-            FROM preference_muscle_groups AS pmg
-            INNER JOIN user_preferences AS up
-                ON pmg.preference_id = up.id
-            WHERE up.user_id = @uid;";
+            FROM preference_muscle_groups pmg
+            WHERE pmg.preference_id = (
+                SELECT id
+                FROM user_preferences
+                WHERE user_id = @uid
+                ORDER BY id DESC
+                LIMIT 1
+            );";
 
             using var mgCmd = new MySqlCommand(mgSql, conn, tx);
             mgCmd.Parameters.AddWithValue("@uid", userId);
@@ -144,9 +153,9 @@ WHERE up.user_id = @uid;";
         private int InsertSchedule(MySqlConnection conn, MySqlTransaction tx, int userId)
         {
             const string sql = @"
-INSERT INTO schedules (user_id)
-VALUES (@uid);
-SELECT LAST_INSERT_ID();";
+                INSERT INTO schedules (user_id)
+                VALUES (@uid);
+                SELECT LAST_INSERT_ID();";
             using var cmd = new MySqlCommand(sql, conn, tx);
             cmd.Parameters.AddWithValue("@uid", userId);
             return Convert.ToInt32(cmd.ExecuteScalar());
@@ -156,24 +165,24 @@ SELECT LAST_INSERT_ID();";
                                       int scheduleId, int dayOfWeek)
         {
             const string sql = @"
-INSERT INTO schedule_days (schedule_id, day_of_week_id)
-VALUES (@sid, @dow);
-SELECT LAST_INSERT_ID();";
+                INSERT INTO schedule_days (schedule_id, day_of_week_id)
+                VALUES (@sid, @dow);
+                SELECT LAST_INSERT_ID();";
             using var cmd = new MySqlCommand(sql, conn, tx);
             cmd.Parameters.AddWithValue("@sid", scheduleId);
             cmd.Parameters.AddWithValue("@dow", dayOfWeek);
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
-
+        
         private List<ExerciseGenerator> LoadExercises(MySqlConnection conn, MySqlTransaction tx,
                                              List<int> muscleGroupIds, int difficultyId)
         {
             const string sql = @"
-SELECT DISTINCT e.id, e.name
-FROM exercises e
-JOIN exercise_muscle_groups emg ON e.id = emg.exercise_id
-WHERE emg.muscle_group_id IN ({0})
-  AND e.difficulty_id = @diff;";
+            SELECT DISTINCT e.id, e.name
+            FROM exercises e
+            JOIN exercise_muscle_groups emg ON e.id = emg.exercise_id
+            WHERE emg.muscle_group_id IN ({0})
+              AND e.difficulty_id = @diff;";
 
             // Build parameter list
             var parameters = new List<string>();
@@ -194,7 +203,7 @@ WHERE emg.muscle_group_id IN ({0})
             }
             reader.Close();
             return list;
-        }
+        } 
 
         private (int sets, int reps) MapSetsReps(int goalId)
         {
@@ -212,8 +221,8 @@ WHERE emg.muscle_group_id IN ({0})
                                         int scheduleDayId, int exerciseId, int sets, int reps)
         {
             const string sql = @"
-INSERT INTO schedule_items (schedule_day_id, exercise_id, sets, reps)
-VALUES (@sdid, @eid, @sets, @reps);";
+                INSERT INTO schedule_items (schedule_day_id, exercise_id, sets, reps)
+                VALUES (@sdid, @eid, @sets, @reps);";
             using var cmd = new MySqlCommand(sql, conn, tx);
             cmd.Parameters.AddWithValue("@sdid", scheduleDayId);
             cmd.Parameters.AddWithValue("@eid", exerciseId);
@@ -222,5 +231,4 @@ VALUES (@sdid, @eid, @sets, @reps);";
             cmd.ExecuteNonQuery();
         }
     }
-
 }
