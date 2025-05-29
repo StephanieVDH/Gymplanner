@@ -65,7 +65,7 @@
                                         <StackPanel Orientation="Vertical" Width="200" DockPanel.Dock="Left">
                                             <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="14"/>
                                             <TextBlock Text="{Binding Difficulty, StringFormat=difficulty: {0}}" FontSize="12" Foreground="Gray"/>
-                                            <TextBlock Text="{Binding MuscleGroup}" FontSize="12" Foreground="Gray"/>
+                                            <TextBlock Text="{Binding MuscleGroupNames}" FontSize="12" Foreground="Gray"/>
                                         </StackPanel>
 
                                         <!-- Actions -->
