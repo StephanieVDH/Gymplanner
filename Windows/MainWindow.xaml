@@ -11,7 +11,7 @@
        VerticalAlignment="Center"/>
         </ControlTemplate>
     </Window.Resources>
-    
+
     <Grid>
         <!-- Define Rows: Header, Content, Footer -->
         <Grid.RowDefinitions>
@@ -108,11 +108,67 @@
                           FontWeight="Bold"
                           Margin="0,20,0,5"/>
 
-                <TextBlock Text="It's pretty easy, you make an account and fill in your info. After that you can start the gymplanner, where you'll answer some questions about your current gym habits to generate a custom gym schedule. So, what are you waiting for? Let's get started!"
-                          TextWrapping="Wrap"
-                          FontSize="18"
-                          Margin="0,10,0,10"
-                          Height="Auto"/>
+                <!-- Modified section with Grid layout for text and API panel -->
+                <Grid Margin="0,10,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- How it works text (left side) -->
+                    <TextBlock Grid.Column="0"
+                              Text="It's pretty easy, you make an account and fill in your info. After that you can start the gymplanner, where you'll answer some questions about your current gym habits to generate a custom gym schedule. So, what are you waiting for? Let's get started!"
+                              TextWrapping="Wrap"
+                              FontSize="18"
+                              Margin="0,0,20,0"
+                              Height="Auto"/>
+
+                    <!-- Fitness API panel (right side) -->
+                    <Border Grid.Column="1" 
+                           Background="#F8F8F8" 
+                           BorderBrush="#B81581" 
+                           BorderThickness="2" 
+                           CornerRadius="10" 
+                           Padding="15"
+                           Margin="10,0,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Fitness Recommendations" 
+                                      FontSize="16" 
+                                      FontWeight="Bold" 
+                                      Foreground="#B81581"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,0,0,10"/>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,5">
+                                <TextBlock Text="BMI:" FontWeight="Bold" Width="40"/>
+                                <TextBox x:Name="BmiTextBox" 
+                                        Width="80" 
+                                        Height="25"
+                                        Text="19.88"
+                                        VerticalContentAlignment="Center"/>
+                            </StackPanel>
+
+                            <Button x:Name="GetRecommendationsButton"
+                                   Content="Get Recommendations"
+                                   Background="#B81581"
+                                   Foreground="White"
+                                   BorderThickness="0"
+                                   Height="30"
+                                   Margin="0,10,0,10"
+                                   Click="GetRecommendationsButton_Click"/>
+
+                            <ScrollViewer x:Name="RecommendationsScrollViewer"
+                                         Height="120"
+                                         VerticalScrollBarVisibility="Auto">
+                                <TextBlock x:Name="RecommendationsTextBlock"
+                                          TextWrapping="Wrap"
+                                          FontSize="12"
+                                          Text="Click 'Get Recommendations' to see personalized fitness advice based on your BMI."
+                                          Foreground="#666"/>
+                            </ScrollViewer>
+                        </StackPanel>
+                    </Border>
+                </Grid>
 
                 <TextBlock Text="ABOUT US"
                           FontSize="24"
@@ -152,4 +208,3 @@
         </DockPanel>
     </Grid>
 </Window>
-
