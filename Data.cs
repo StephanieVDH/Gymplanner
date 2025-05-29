@@ -225,7 +225,81 @@ namespace Gymplanner
             return list;
         }
 
-        // 3. User verwijderen
+        // 3. User toevoegen als Admin
+        // InsertUser overload that takes a plain-text password and a role
+        public int InsertUserAdmin(User u, string plainPassword, int roleId)
+        {
+            var pwdHash = BCrypt.Net.BCrypt.HashPassword(plainPassword);
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            var sql = @"
+      INSERT INTO users
+        (username, email, password_hash, role_id, created_at)
+      VALUES
+        (@username, @email, @pwd, @role, NOW());
+    ";
+            using var cmd = new MySqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@username", u.Username);
+            cmd.Parameters.AddWithValue("@email", u.Email);
+            cmd.Parameters.AddWithValue("@pwd", pwdHash);
+            cmd.Parameters.AddWithValue("@role", roleId);
+            cmd.ExecuteNonQuery();
+            return (int)cmd.LastInsertedId;
+        }
+
+        // UpdateUser that optionally re-hashes a new password
+        public bool UpdateUser(User u, string plainPassword, int roleId)
+        {
+            // Hash only if a new password was provided
+            string pwdHash = null;
+            if (!string.IsNullOrWhiteSpace(plainPassword))
+                pwdHash = BCrypt.Net.BCrypt.HashPassword(plainPassword);
+
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            // Build SQL and parameters
+            string sql;
+            if (pwdHash != null)
+            {
+                sql = @"
+            UPDATE users
+               SET username      = @username,
+                   email         = @email,
+                   password_hash = @pwd,
+                   role_id       = @role
+             WHERE id = @id;
+        ";
+            }
+            else
+            {
+                sql = @"
+            UPDATE users
+               SET username = @username,
+                   email    = @email,
+                   role_id  = @role
+             WHERE id = @id;
+        ";
+            }
+
+            // NOTE: first arg = SQL text, second = open connection
+            using var cmd = new MySqlCommand(sql, conn);
+
+            // Common parameters
+            cmd.Parameters.AddWithValue("@username", u.Username);
+            cmd.Parameters.AddWithValue("@email", u.Email);
+            cmd.Parameters.AddWithValue("@role", roleId);
+            cmd.Parameters.AddWithValue("@id", u.Id);
+
+            // Only add @pwd if we're updating the password
+            if (pwdHash != null)
+                cmd.Parameters.AddWithValue("@pwd", pwdHash);
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        // 4. User verwijderen (admin)
         public bool DeleteUser(int userId)
         {
             string sql = $"DELETE FROM users WHERE id = {userId};";

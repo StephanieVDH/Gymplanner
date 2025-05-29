@@ -49,7 +49,6 @@
                                         </StackPanel>
 
                                         <!-- Avatar -->
-                                        <!-- Avatar -->
                                         <Border Width="40"
                                               Height="40"
                                               CornerRadius="20"
