@@ -57,13 +57,23 @@
                                         <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Right"
                                 DockPanel.Dock="Right">
-                                            <Button Content="Edit user"
+                                            <Button Content="Edit"
+                              Width="80"
+                              Height="30"
                               Padding="8,4"
                               Margin="0,0,10,0"
+                              Background="#F4B6C2"
+                              Foreground="White"
+                              BorderThickness="0"
                               Click="EditUserButton_Click"
                               CommandParameter="{Binding}"/>
-                                            <Button Content="Delete user"
+                                            <Button Content="Delete"
+                              Width="80"
+                              Height="30"
                               Padding="8,4"
+                              Background="#D6434F"
+                              Foreground="White"
+                              BorderThickness="0"
                               Click="DeleteUserButton_Click"
                               CommandParameter="{Binding}"/>
                                         </StackPanel>
@@ -133,13 +143,22 @@
                                         <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Right"
                                 DockPanel.Dock="Right">
-                                            <Button Content="Edit exercise"
+                                            <Button Content="Edit"
+                              Width="80" Height="30"
                               Padding="8,4"
                               Margin="0,0,10,0"
+                              Background="#F4B6C2"
+                              Foreground="White"
+                              BorderThickness="0"
                               Click="EditExerciseButton_Click"
                               CommandParameter="{Binding}"/>
-                                            <Button Content="Delete exercise"
+
+                                            <Button Content="Delete"
+                              Width="80" Height="30"
                               Padding="8,4"
+                              Background="#D6434F"
+                              Foreground="White"
+                              BorderThickness="0"
                               Click="DeleteExerciseButton_Click"
                               CommandParameter="{Binding}"/>
                                         </StackPanel>
