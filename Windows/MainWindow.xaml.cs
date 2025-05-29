@@ -14,7 +14,6 @@ using Gymplanner.Wizard;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace Gymplanner.Windows
 {
@@ -81,10 +80,12 @@ namespace Gymplanner.Windows
                 GetRecommendationsButton.Content = "Loading...";
                 RecommendationsTextBlock.Text = "Fetching recommendations...";
 
-                // Parse BMI from textbox
-                if (!double.TryParse(BmiTextBox.Text, out double bmi))
+                // Parse BMI from textbox with culture-invariant parsing
+                string bmiText = BmiTextBox.Text.Replace(',', '.'); // Convert comma to dot
+                if (!double.TryParse(bmiText, System.Globalization.NumberStyles.Float,
+                                   System.Globalization.CultureInfo.InvariantCulture, out double bmi))
                 {
-                    MessageBox.Show("Please enter a valid BMI value.", "Invalid Input",
+                    MessageBox.Show("Please enter a valid BMI value (e.g., 19.5 or 19,5).", "Invalid Input",
                                   MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
@@ -120,7 +121,7 @@ namespace Gymplanner.Windows
                     { "x-rapidapi-key", "07e6c45aa7mshe70f0925f288b1cp161395jsnc2e0c667364c" },
                     { "x-rapidapi-host", "fitness-info-api.p.rapidapi.com" },
                 },
-                Content = new StringContent($"{{\"bmi\":{bmi}}}")
+                Content = new StringContent($"{{\"bmi\":{bmi.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}")
                 {
                     Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
                 }
@@ -131,17 +132,73 @@ namespace Gymplanner.Windows
                 response.EnsureSuccessStatusCode();
                 var body = await response.Content.ReadAsStringAsync();
 
-                // Try to parse and format the JSON response
-                try
+                // Clean up and parse the JSON response
+                string cleanResponse = body.Trim();
+
+                // Display only the API recommendation
+                string apiRecommendation = ExtractRecommendationFromResponse(cleanResponse);
+                string formattedResponse = FormatRecommendation(apiRecommendation);
+
+                return formattedResponse;
+            }
+        }
+
+        private string ExtractRecommendationFromResponse(string responseBody)
+        {
+            // Try to extract recommendation from various possible response formats
+            string lowerResponse = responseBody.ToLower();
+
+            if (lowerResponse.Contains("weight loss") || lowerResponse.Contains("weightloss"))
+            {
+                return "weight loss";
+            }
+            else if (lowerResponse.Contains("weight gain") || lowerResponse.Contains("weightgain"))
+            {
+                return "weight gain";
+            }
+            else if (lowerResponse.Contains("maintain") || lowerResponse.Contains("normal"))
+            {
+                return "maintain weight";
+            }
+            else if (lowerResponse.Contains("recommendation"))
+            {
+                // Try to extract from JSON format like {"recommendation":"Weight Loss"}
+                int start = responseBody.ToLower().IndexOf("\"recommendation\":\"") + 18;
+                if (start > 17)
                 {
-                    var jsonResponse = JsonConvert.DeserializeObject(body);
-                    return JsonConvert.SerializeObject(jsonResponse, Formatting.Indented);
+                    int end = responseBody.IndexOf("\"", start);
+                    if (end > start)
+                    {
+                        return responseBody.Substring(start, end - start).ToLower();
+                    }
                 }
-                catch
-                {
-                    // If JSON parsing fails, return the raw response
-                    return body;
-                }
+            }
+
+            // If we can't parse it, return the raw response for debugging
+            return responseBody.Trim().Trim('"');
+        }
+
+        private string GetBmiCategory(double bmi)
+        {
+            if (bmi < 18.5) return "Underweight";
+            else if (bmi < 25) return "Normal";
+            else if (bmi < 30) return "Overweight";
+            else return "Obese";
+        }
+
+        private string FormatRecommendation(string recommendation)
+        {
+            // Make the recommendation more descriptive based on the API response
+            switch (recommendation.ToLower())
+            {
+                case "weight loss":
+                    return "Focus on weight loss through a combination of cardio exercises and strength training. Consider a caloric deficit diet with proper nutrition guidance.";
+                case "weight gain":
+                    return "Focus on healthy weight gain through strength training and a caloric surplus diet with adequate protein intake.";
+                case "maintain weight":
+                    return "Maintain your current weight through regular exercise and a balanced diet. Focus on building muscle and cardiovascular fitness.";
+                default:
+                    return recommendation; // Return original if it doesn't match expected responses
             }
         }
     }
