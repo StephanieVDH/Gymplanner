@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -56,6 +57,7 @@ namespace Gymplanner
                 return -1;
             }
         }
+        // Users --> Profile Window:
         public Gymplanner.CS.User GetUserByEmailForProfile(string email)
         {
             Gymplanner.CS.User user = null;
@@ -96,9 +98,7 @@ namespace Gymplanner
             return user;
         }
 
-        /// <summary>
-        /// Gets user preferences with goal and fitness level names
-        /// </summary>
+        // Gets user preferences with goal and fitness level names
         public Gymplanner.CS.User.UserPreferences GetUserPreferences(int userId)
         {
             Gymplanner.CS.User.UserPreferences preferences = null;
@@ -280,6 +280,56 @@ namespace Gymplanner
                 return false;
             }
         }
+
+        // Stores the given file-path into users.picture (VARCHAR).
+        public bool UpdateUserProfilePicture(int userId, string picturePath)
+        {
+            const string sql = @"
+                UPDATE users
+                   SET picture    = @path,
+                       updated_at = NOW()
+                 WHERE id         = @userId;
+            ";
+
+            try
+            {
+                using var conn = new MySqlConnection(connectionString);
+                conn.Open();
+                using var cmd = new MySqlCommand(sql, conn);
+                cmd.Parameters.Add("@path", MySqlDbType.VarChar).Value = picturePath;
+                cmd.Parameters.Add("@userId", MySqlDbType.Int32).Value = userId;
+
+                return cmd.ExecuteNonQuery() > 0;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error saving profile picture path: {ex}");
+                return false;
+            }
+        }
+
+        // Retrieves the picture path (VARCHAR) for the given user, or null if none set.
+        public string? GetUserProfilePicture(int userId)
+        {
+            const string sql = @"
+                SELECT picture
+                  FROM users
+                 WHERE id = @userId
+                 LIMIT 1;
+            ";
+
+            using var conn = new MySqlConnection(connectionString);
+            using var cmd = new MySqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@userId", userId);
+
+            conn.Open();
+            var result = cmd.ExecuteScalar();
+            if (result == null || result == DBNull.Value)
+                return null;
+
+            return result.ToString();
+        }
+
 
 
         // EXERCISES:

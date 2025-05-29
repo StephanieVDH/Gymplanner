@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using IOPath = System.IO.Path;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,13 +15,15 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Gymplanner.CS;
-using Gymplanner.Wizard; // Add this using statement for WizardWindow
+using Gymplanner.Wizard; 
 using static Gymplanner.CS.User;
+using System.Diagnostics;
 
 namespace Gymplanner.Windows
 {
     public partial class ProfileWindow : Window
     {
+        private readonly Data data = new Data();
         private UserProfile userProfile;
 
         // Constructor that accepts user data
@@ -28,23 +31,16 @@ namespace Gymplanner.Windows
         {
             InitializeComponent();
             LoadUserProfile(user);
+            DataContext = userProfile;
+            LoadCurrentPicture();
         }
 
-        // Keep the default constructor for design-time support
-        /*
-        public ProfileWindow()
-        {
-            InitializeComponent();
-            LoadDefaultData();
-        }
-        */
 
         private void LoadUserProfile(User user)
         {
             try
             {
-                var db = new Data();
-                userProfile = db.GetCompleteUserProfile(user.Email);
+                userProfile = data.GetCompleteUserProfile(user.Email);
 
                 if (userProfile != null)
                 {
@@ -91,9 +87,6 @@ namespace Gymplanner.Windows
                     // Hide preferences section if no data
                     PreferencesSection.Visibility = Visibility.Collapsed;
                 }
-
-                // Handle missing image gracefully
-                HandleProfileImage();
             }
             catch (Exception ex)
             {
@@ -115,8 +108,6 @@ namespace Gymplanner.Windows
                 PreferredTimeDisplay.Text = "Not set";
                 // Hide preferences section
                 PreferencesSection.Visibility = Visibility.Collapsed;
-
-                HandleProfileImage();
             }
             catch (Exception ex)
             {
@@ -124,24 +115,6 @@ namespace Gymplanner.Windows
             }
         }
 
-        private void HandleProfileImage()
-        {
-            try
-            {
-                // Try to load the image, if it fails, set a fallback
-                if (ProfileImageBrush.ImageSource == null)
-                {
-                    // Create a fallback colored brush
-                    ProfileImageBrush.ImageSource = null;
-                    // You could also set a solid color fill here instead
-                }
-            }
-            catch (Exception ex)
-            {
-                // If image loading fails, continue without it
-                System.Diagnostics.Debug.WriteLine($"Could not load profile image: {ex.Message}");
-            }
-        }
 
         private string CapitalizeFirstLetter(string input)
         {
@@ -155,38 +128,115 @@ namespace Gymplanner.Windows
         {
             // You can customize this logic based on your requirements
             // For now, we'll map duration to time preferences
-            if (sessionDurationMinutes <= 30)
-                return "Quick Session (≤30 min)";
-            else if (sessionDurationMinutes <= 60)
-                return "Standard Session (30-60 min)";
+            if (sessionDurationMinutes == 30)
+                return "Quick Session (30 min)";
             else if (sessionDurationMinutes <= 90)
-                return "Extended Session (60-90 min)";
+                return "Standard Session (45-60 min)";
+            else 
+                return "Long Session (90 min)";
+        }
+
+        private void LoadCurrentPicture()
+        {
+            // 1) fetch the *relative* path from the DB
+            var rel = data.GetUserProfilePicture(userProfile.User.Id);
+            // 2) decide which file on disk to load
+            string fileOnDisk;
+            if (!string.IsNullOrEmpty(rel))
+            {
+                // eg: bin/Debug/Images/ProfilePics/123.png
+                fileOnDisk = IOPath.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    rel
+                );
+            }
             else
-                return "Long Session (>90 min)";
+            {
+                // your default avatar (already copied in /Images)
+                fileOnDisk = IOPath.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "Images",
+                    "avatar.png"
+                );
+            }
+            // 3) point the brush at that absolute file
+            ProfileImageBrush.ImageSource = new BitmapImage(
+                new Uri(fileOnDisk, UriKind.Absolute)
+            );
+            // 4) keep your VM in sync (if you’re using it elsewhere)
+            userProfile.Picture = rel;
         }
 
         private void UploadPictureBtn_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Image files (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg|All files (*.*)|*.*";
-
-            if (openFileDialog.ShowDialog() == true)
+            // 1) Let user pick an image
+            var dlg = new OpenFileDialog
             {
-                try
-                {
-                    // For now, just show a message that the image was selected
-                    // You can implement the actual image display logic later
-                    MessageBox.Show($"Image selected: {System.IO.Path.GetFileName(openFileDialog.FileName)}",
-                                  "Image Upload", MessageBoxButton.OK, MessageBoxImage.Information);
+                Title = "Select Profile Picture",
+                Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif",
+                Multiselect = false
+            };
+            if (dlg.ShowDialog() != true)
+                return;
 
-                    // TODO: Save the image path to user profile
-                    // You would need to add profile_picture column to users table
-                    // and implement UpdateProfilePicture method in Data class
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error loading image: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+            // 2) Copy to your app's Images/ProfilePics folder
+            var imagesDir = IOPath.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "Images",
+                "ProfilePics"
+            );
+            Directory.CreateDirectory(imagesDir);
+
+            // 3) Build a unique filename and copy
+            var filename = $"{userProfile.User.Id}{IOPath.GetExtension(dlg.FileName)}";
+            var destPath = IOPath.Combine(imagesDir, filename);
+            File.Copy(dlg.FileName, destPath, overwrite: true);
+
+            // 4) Persist the *relative* path in the DB
+            //    e.g. "Images/ProfilePics/1234.png"
+            var relativePath = IOPath.Combine("Images", "ProfilePics", filename);
+            var success = data.UpdateUserProfilePicture(
+                userProfile.User.Id,
+                relativePath
+            );
+
+            if (!success)
+            {
+                MessageBox.Show(
+                    "Failed to save your picture. Please try again.",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+                return;
+            }
+
+            // 5) Update the VM so any other bindings stay in sync
+            userProfile.Picture = relativePath;
+
+            // 6) Update the circle immediately by pointing your ImageBrush
+            try
+            {
+                var absolutePath = IOPath.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    relativePath
+                );
+                ProfileImageBrush.ImageSource = new BitmapImage(
+                    new Uri(absolutePath, UriKind.Absolute)
+                );
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error setting profile image brush: {ex}");
+                // fallback to default avatar if something goes awry
+                var defaultPath = IOPath.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "Images",
+                    "avatar.png"
+                );
+                ProfileImageBrush.ImageSource = new BitmapImage(
+                    new Uri(defaultPath, UriKind.Absolute)
+                );
             }
         }
 
@@ -295,9 +345,7 @@ namespace Gymplanner.Windows
 
                 if (finalConfirm == MessageBoxResult.Yes)
                 {
-                    var db = new Data();
-
-                    if (db.DeleteUser(userProfile.User.Id))
+                    if (data.DeleteUser(userProfile.User.Id))
                     {
                         MessageBox.Show("Your account has been successfully deleted");
                         this.Close();

@@ -40,4 +40,8 @@
     </Resource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Images\ProfilePics\" />
+  </ItemGroup>
+
 </Project>
