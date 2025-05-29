@@ -47,37 +47,40 @@
                     <StackPanel Grid.Row="1" 
                                 HorizontalAlignment="Center"
                                 Margin="0,0,0,25">
+
                         <Ellipse Width="120" 
-                                 Height="120"
-                                 Margin="0,0,0,15"
-                                 Stroke="#FFDDDDDD"
-                                 StrokeThickness="3">
+                               Height="120"
+                               Margin="0,0,0,15"
+                               Stroke="#FFDDDDDD"
+                               StrokeThickness="3">
                             <Ellipse.Fill>
+                                <!-- Named brush so code-behind can set ProfileImageBrush.ImageSource = ... -->
                                 <ImageBrush x:Name="ProfileImageBrush"
-                                            ImageSource="/Images/default-avatar.jpg"
-                                            Stretch="UniformToFill"/>
+                                              ImageSource="/Images/default-avatar.jpg"
+                                              Stretch="UniformToFill"/>
                             </Ellipse.Fill>
                         </Ellipse>
+
                         <Button x:Name="UploadPictureBtn"
-                                Content="UPLOAD PICTURE"
-                                Background="#FF666666"
-                                Foreground="White"
-                                BorderThickness="0"
-                                Padding="12,8"
-                                FontSize="12"
-                                FontWeight="Bold"
-                                Cursor="Hand"
-                                Click="UploadPictureBtn_Click">
+                              Content="UPLOAD PICTURE"
+                              Background="#FF666666"
+                              Foreground="White"
+                              BorderThickness="0"
+                              Padding="12,8"
+                              FontSize="12"
+                              FontWeight="Bold"
+                              Cursor="Hand"
+                              Click="UploadPictureBtn_Click">
                             <Button.Style>
                                 <Style TargetType="Button">
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="Button">
                                                 <Border Background="{TemplateBinding Background}"
-                                                        CornerRadius="4"
-                                                        Padding="{TemplateBinding Padding}">
+                                                      CornerRadius="4"
+                                                      Padding="{TemplateBinding Padding}">
                                                     <ContentPresenter HorizontalAlignment="Center"
-                                                                      VerticalAlignment="Center"/>
+                                                        VerticalAlignment="Center"/>
                                                 </Border>
                                                 <ControlTemplate.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
@@ -90,6 +93,7 @@
                                 </Style>
                             </Button.Style>
                         </Button>
+
                     </StackPanel>
 
                     <!-- User Info Section -->
