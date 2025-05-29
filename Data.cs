@@ -200,6 +200,7 @@ namespace Gymplanner
             @"SELECT u.id,
                      u.username,
                      u.email,
+                     u.picture,
                      r.name   AS role,
                      u.created_at
               FROM users u
@@ -215,7 +216,10 @@ namespace Gymplanner
                     Username = reader.GetString("username"),
                     Email = reader.GetString("email"),
                     Role = reader.GetString("role"),       
-                    CreatedAt = reader.GetDateTime("created_at")
+                    CreatedAt = reader.GetDateTime("created_at"),
+                    Picture = reader.IsDBNull(reader.GetOrdinal("picture"))
+                          ? null
+                          : reader.GetString("picture")
                 });
             }
             return list;
