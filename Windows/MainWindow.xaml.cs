@@ -71,60 +71,46 @@ namespace Gymplanner.Windows
             admin.Show();          // or admin.ShowDialog() if you want it modal
         }
 
-        private async void GetRecommendationsButton_Click(object sender, RoutedEventArgs e)
+        private async void GetQuoteButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 // Disable button during API call
-                GetRecommendationsButton.IsEnabled = false;
-                GetRecommendationsButton.Content = "Loading...";
-                RecommendationsTextBlock.Text = "Fetching recommendations...";
+                GetQuoteButton.IsEnabled = false;
+                GetQuoteButton.Content = "Loading...";
+                QuoteTextBlock.Text = "Fetching motivational quote...";
 
-                // Parse BMI from textbox with culture-invariant parsing
-                string bmiText = BmiTextBox.Text.Replace(',', '.'); // Convert comma to dot
-                if (!double.TryParse(bmiText, System.Globalization.NumberStyles.Float,
-                                   System.Globalization.CultureInfo.InvariantCulture, out double bmi))
-                {
-                    MessageBox.Show("Please enter a valid BMI value (e.g., 19.5 or 19,5).", "Invalid Input",
-                                  MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
+                // Call the motivation quotes API
+                var quote = await GetMotivationQuote();
 
-                // Call the fitness API
-                var recommendations = await GetFitnessRecommendations(bmi);
-
-                // Display the recommendations
-                RecommendationsTextBlock.Text = recommendations;
+                // Display the quote
+                QuoteTextBlock.Text = quote;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error getting recommendations: {ex.Message}", "Error",
+                MessageBox.Show($"Error getting quote: {ex.Message}", "Error",
                               MessageBoxButton.OK, MessageBoxImage.Error);
-                RecommendationsTextBlock.Text = "Failed to get recommendations. Please try again.";
+                QuoteTextBlock.Text = "Failed to get quote. Please try again.";
             }
             finally
             {
                 // Re-enable button
-                GetRecommendationsButton.IsEnabled = true;
-                GetRecommendationsButton.Content = "Get Recommendations";
+                GetQuoteButton.IsEnabled = true;
+                GetQuoteButton.Content = "Get Motivational Quote";
             }
         }
 
-        private async Task<string> GetFitnessRecommendations(double bmi)
+        private async Task<string> GetMotivationQuote()
         {
             var request = new HttpRequestMessage
             {
-                Method = HttpMethod.Post,
-                RequestUri = new Uri("https://fitness-info-api.p.rapidapi.com/api/recom"),
+                Method = HttpMethod.Get,
+                RequestUri = new Uri("https://motivation-quotes4.p.rapidapi.com/api"),
                 Headers =
                 {
                     { "x-rapidapi-key", "07e6c45aa7mshe70f0925f288b1cp161395jsnc2e0c667364c" },
-                    { "x-rapidapi-host", "fitness-info-api.p.rapidapi.com" },
+                    { "x-rapidapi-host", "motivation-quotes4.p.rapidapi.com" },
                 },
-                Content = new StringContent($"{{\"bmi\":{bmi.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}")
-                {
-                    Headers = { ContentType = new MediaTypeHeaderValue("application/json") }
-                }
             };
 
             using (var response = await httpClient.SendAsync(request))
@@ -132,73 +118,67 @@ namespace Gymplanner.Windows
                 response.EnsureSuccessStatusCode();
                 var body = await response.Content.ReadAsStringAsync();
 
-                // Clean up and parse the JSON response
-                string cleanResponse = body.Trim();
-
-                // Display only the API recommendation
-                string apiRecommendation = ExtractRecommendationFromResponse(cleanResponse);
-                string formattedResponse = FormatRecommendation(apiRecommendation);
-
-                return formattedResponse;
+                // Parse and format the quote response
+                return ParseQuoteResponse(body);
             }
         }
 
-        private string ExtractRecommendationFromResponse(string responseBody)
+        private string ParseQuoteResponse(string responseBody)
         {
-            // Try to extract recommendation from various possible response formats
-            string lowerResponse = responseBody.ToLower();
+            try
+            {
+                // The API likely returns JSON, try to extract quote and author
+                string cleanResponse = responseBody.Trim();
 
-            if (lowerResponse.Contains("weight loss") || lowerResponse.Contains("weightloss"))
-            {
-                return "weight loss";
-            }
-            else if (lowerResponse.Contains("weight gain") || lowerResponse.Contains("weightgain"))
-            {
-                return "weight gain";
-            }
-            else if (lowerResponse.Contains("maintain") || lowerResponse.Contains("normal"))
-            {
-                return "maintain weight";
-            }
-            else if (lowerResponse.Contains("recommendation"))
-            {
-                // Try to extract from JSON format like {"recommendation":"Weight Loss"}
-                int start = responseBody.ToLower().IndexOf("\"recommendation\":\"") + 18;
-                if (start > 17)
+                // Look for common JSON patterns for quotes
+                if (cleanResponse.Contains("\"quote\"") && cleanResponse.Contains("\"author\""))
                 {
-                    int end = responseBody.IndexOf("\"", start);
-                    if (end > start)
+                    string quote = ExtractJsonValue(cleanResponse, "quote");
+                    string author = ExtractJsonValue(cleanResponse, "author");
+
+                    if (!string.IsNullOrEmpty(quote))
                     {
-                        return responseBody.Substring(start, end - start).ToLower();
+                        return string.IsNullOrEmpty(author) ? $"\"{quote}\"" : $"\"{quote}\"\n\n- {author}";
                     }
                 }
+
+                // If standard parsing fails, try other common patterns
+                if (cleanResponse.Contains("\"text\""))
+                {
+                    string quote = ExtractJsonValue(cleanResponse, "text");
+                    if (!string.IsNullOrEmpty(quote))
+                    {
+                        return $"\"{quote}\"";
+                    }
+                }
+
+                // If all parsing fails, return cleaned response
+                return cleanResponse.Trim('"').Trim();
             }
-
-            // If we can't parse it, return the raw response for debugging
-            return responseBody.Trim().Trim('"');
-        }
-
-        private string GetBmiCategory(double bmi)
-        {
-            if (bmi < 18.5) return "Underweight";
-            else if (bmi < 25) return "Normal";
-            else if (bmi < 30) return "Overweight";
-            else return "Obese";
-        }
-
-        private string FormatRecommendation(string recommendation)
-        {
-            // Make the recommendation more descriptive based on the API response
-            switch (recommendation.ToLower())
+            catch
             {
-                case "weight loss":
-                    return "Focus on weight loss through a combination of cardio exercises and strength training. Consider a caloric deficit diet with proper nutrition guidance.";
-                case "weight gain":
-                    return "Focus on healthy weight gain through strength training and a caloric surplus diet with adequate protein intake.";
-                case "maintain weight":
-                    return "Maintain your current weight through regular exercise and a balanced diet. Focus on building muscle and cardiovascular fitness.";
-                default:
-                    return recommendation; // Return original if it doesn't match expected responses
+                // If parsing fails, return the raw response
+                return responseBody.Trim();
+            }
+        }
+
+        private string ExtractJsonValue(string json, string key)
+        {
+            try
+            {
+                string pattern = $"\"{key}\":\"";
+                int start = json.IndexOf(pattern);
+                if (start == -1) return string.Empty;
+
+                start += pattern.Length;
+                int end = json.IndexOf("\"", start);
+                if (end == -1) return string.Empty;
+
+                return json.Substring(start, end - start);
+            }
+            catch
+            {
+                return string.Empty;
             }
         }
     }
