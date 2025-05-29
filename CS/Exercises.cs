@@ -11,10 +11,16 @@ namespace Gymplanner.CS
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+
+        // FK to difficulty_levels
         public int DifficultyId { get; set; }
         public string Difficulty { get; set; } = string.Empty;
+
+        // Display string
         public string MuscleGroupNames { get; set; } = string.Empty;
-        public List<int> MuscleGroupIds { get; set; } = new();
+
+        // **The important bit**: all selected group IDs
+        public List<int> MuscleGroupIds { get; set; } = new List<int>();
     }
 
     public class MuscleGroup

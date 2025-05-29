@@ -27,12 +27,26 @@
              TextWrapping="Wrap"
              VerticalScrollBarVisibility="Auto"/>
 
-        <!-- Muscle Groups -->
-        <TextBlock Text="Muscle Groups:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Top" Margin="0,5"/>
+        <!-- Muscle Groups (multi-select with checkboxes) -->
+        <TextBlock Text="Muscle Groups:"
+           Grid.Row="2" Grid.Column="0"
+           VerticalAlignment="Top"
+           Margin="0,5"/>
         <ListBox x:Name="MuscleList"
-             Grid.Row="2" Grid.Column="1" Margin="5"
-             SelectionMode="Extended"
-             DisplayMemberPath="Name"/>
+         Grid.Row="2" Grid.Column="1"
+         Margin="5"
+         SelectionMode="Multiple"
+         ItemsSource="{Binding _allMuscleGroups}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <!-- This CheckBox will toggle the ListBoxItem’s IsSelected property -->
+                    <CheckBox Content="{Binding Name}"
+                IsChecked="{Binding IsSelected,
+                  RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
+                Padding="2"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
         <!-- Difficulty -->
         <TextBlock Text="Difficulty:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,5"/>

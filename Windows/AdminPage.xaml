@@ -28,7 +28,7 @@
 
                                         <!-- Avatar -->
                                         <Border Width="40" Height="40" CornerRadius="20" Background="#EEE" Margin="20,0" DockPanel.Dock="Left">
-                                            <Image Source="/Assets/avatar_placeholder.png" Stretch="Uniform"/>
+                                            <Image Source="/Images/avatar.png" Stretch="Uniform"/>
                                         </Border>
 
                                         <!-- Actions -->

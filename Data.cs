@@ -379,49 +379,48 @@ namespace Gymplanner
             return list;
         }
 
-        // Inserts a new exercise + its difficulty + muscle‐group links.
+        // Oefeningen toevoegen als admin:
         public int InsertExercise(Exercise ex, int difficultyId, List<int> muscleGroupIds)
         {
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            // 1) insert into exercises
+            // Insert core row
             using var cmd = new MySqlCommand(
-                @"INSERT INTO exercises (name, description, difficulty_id)
-              VALUES (@n, @d, @dl);", conn);
+              @"INSERT INTO exercises 
+         (name, description, difficulty_id)
+        VALUES(@n,@d,@dl);", conn);
             cmd.Parameters.AddWithValue("@n", ex.Name);
             cmd.Parameters.AddWithValue("@d", ex.Description ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@dl", difficultyId);
             cmd.ExecuteNonQuery();
             int newId = (int)cmd.LastInsertedId;
 
-            // 2) link muscle groups
-            foreach (var mg in muscleGroupIds)
+            // Link M–M
+            foreach (var mgId in muscleGroupIds)
             {
                 using var link = new MySqlCommand(
-                    @"INSERT INTO exercise_muscle_groups
-                  (exercise_id, muscle_group_id)
-                  VALUES (@e, @m);", conn);
+                  @"INSERT INTO exercise_muscle_groups
+             (exercise_id, muscle_group_id)
+            VALUES(@e,@m);", conn);
                 link.Parameters.AddWithValue("@e", newId);
-                link.Parameters.AddWithValue("@m", mg);
+                link.Parameters.AddWithValue("@m", mgId);
                 link.ExecuteNonQuery();
             }
 
             return newId;
         }
 
-
-        // Updates an existing exercise and its muscle‐group links.
         public bool UpdateExercise(Exercise ex, int difficultyId, List<int> muscleGroupIds)
         {
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            // 1) update core row
+            // 1) update core
             using var cmd = new MySqlCommand(
-                @"UPDATE exercises
-              SET name=@n, description=@d, difficulty_id=@dl
-              WHERE id=@i;", conn);
+              @"UPDATE exercises
+         SET name=@n, description=@d, difficulty_id=@dl
+         WHERE id=@i;", conn);
             cmd.Parameters.AddWithValue("@n", ex.Name);
             cmd.Parameters.AddWithValue("@d", ex.Description ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@dl", difficultyId);
@@ -430,19 +429,19 @@ namespace Gymplanner
 
             // 2) clear old links
             using var del = new MySqlCommand(
-                "DELETE FROM exercise_muscle_groups WHERE exercise_id=@i;", conn);
+              "DELETE FROM exercise_muscle_groups WHERE exercise_id=@i;", conn);
             del.Parameters.AddWithValue("@i", ex.Id);
             del.ExecuteNonQuery();
 
             // 3) insert new links
-            foreach (var mg in muscleGroupIds)
+            foreach (var mgId in muscleGroupIds)
             {
                 using var link = new MySqlCommand(
-                    @"INSERT INTO exercise_muscle_groups
-                  (exercise_id, muscle_group_id)
-                  VALUES (@e, @m);", conn);
+                  @"INSERT INTO exercise_muscle_groups
+             (exercise_id, muscle_group_id)
+            VALUES(@e,@m);", conn);
                 link.Parameters.AddWithValue("@e", ex.Id);
-                link.Parameters.AddWithValue("@m", mg);
+                link.Parameters.AddWithValue("@m", mgId);
                 link.ExecuteNonQuery();
             }
 

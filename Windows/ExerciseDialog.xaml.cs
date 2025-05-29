@@ -32,27 +32,33 @@ namespace Gymplanner.Windows
 
         public ExerciseDialog(Exercise toEdit) : this()
         {
+            // Mark as editing and swap the title
             _isEdit = true;
             Current = toEdit;
             DialogTitle = "Edit Exercise";
 
-            // pre-fill text fields:
+            // Because we just changed DialogTitle, re‐apply DataContext so the window title updates:
+            DataContext = null;
+            DataContext = this;
+
+            // 1) Pre-fill text fields:
             NameText.Text = toEdit.Name;
             DescText.Text = toEdit.Description;
 
-            // pick the correct difficulty:
-            DiffBox.SelectedItem = _difficulties
-                .FirstOrDefault(d => d.Id == toEdit.DifficultyId);
+            // 2) Pick the correct difficulty by matching the ID
+            DiffBox.SelectedValuePath = nameof(DifficultyLevel.Id);
+            DiffBox.DisplayMemberPath = nameof(DifficultyLevel.Name);
+            DiffBox.SelectedValue = toEdit.DifficultyId;
 
-            // select the muscle-groups in the multi-select list:
-            var names = toEdit.MuscleGroupNames
-                .Split(',', ' ')
-                .Select(s => s.Trim())
-                .Where(s => !string.IsNullOrEmpty(s))
-                .ToArray();
+            // 3) Split only on commas to preserve names with spaces
+            var selectedNames = toEdit.MuscleGroupNames
+                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(n => n.Trim())
+                .ToHashSet();
 
+            // 4) Select each matching MuscleGroup in our ListBox
             foreach (var mg in _allMuscleGroups
-                         .Where(m => names.Contains(m.Name)))
+                .Where(m => selectedNames.Contains(m.Name)))
             {
                 MuscleList.SelectedItems.Add(mg);
             }
@@ -69,14 +75,15 @@ namespace Gymplanner.Windows
 
         private void Ok_Click(object sender, RoutedEventArgs e)
         {
-            // gather inputs
+            // 1) Gather inputs
             var name = NameText.Text.Trim();
             var desc = DescText.Text.Trim();
-            var diff = (DifficultyLevel)DiffBox.SelectedItem;
+            var diff = DiffBox.SelectedItem as DifficultyLevel;
             var selectedMGs = MuscleList.SelectedItems
                                   .Cast<MuscleGroup>()
                                   .ToList();
 
+            // 2) Validate
             if (string.IsNullOrEmpty(name)
              || diff == null
              || selectedMGs.Count == 0)
@@ -90,18 +97,13 @@ namespace Gymplanner.Windows
                 return;
             }
 
-            // build the comma-list for display
-            var mgNames = string.Join(
-                ", ",
-                selectedMGs.Select(m => m.Name)
-            );
-            var mgIds = selectedMGs
-                .Select(m => m.Id)
-                .ToList();
+            // 3) Prepare lists for display & storage
+            var mgNames = string.Join(", ", selectedMGs.Select(m => m.Name));
+            var mgIds = selectedMGs.Select(m => m.Id).ToList();
 
             if (_isEdit)
             {
-                // update the Current instance
+                // 4a) Edit existing Exercise
                 Current.Name = name;
                 Current.Description = desc;
                 Current.DifficultyId = diff.Id;
@@ -109,16 +111,12 @@ namespace Gymplanner.Windows
                 Current.MuscleGroupIds = mgIds;
                 Current.MuscleGroupNames = mgNames;
 
-                // persist via Data.cs
-                _data.UpdateExercise(
-                  Current,
-                  diff.Id,
-                  mgIds
-                );
+                // 5a) Persist changes
+                _data.UpdateExercise(Current, diff.Id, mgIds);
             }
             else
             {
-                // create a fresh Exercise
+                // 4b) Create new Exercise instance
                 var ex = new Exercise
                 {
                     Name = name,
@@ -129,16 +127,13 @@ namespace Gymplanner.Windows
                     MuscleGroupNames = mgNames
                 };
 
-                // insert and get the new PK
-                int newId = _data.InsertExercise(
-                  ex,
-                  diff.Id,
-                  mgIds
-                );
+                // 5b) Insert and capture new primary key
+                int newId = _data.InsertExercise(ex, diff.Id, mgIds);
                 ex.Id = newId;
                 Current = ex;
             }
 
+            // 6) Close dialog with success
             DialogResult = true;
         }
 
