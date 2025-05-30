@@ -17,10 +17,58 @@ namespace Gymplanner.Windows
 {
     public partial class LoginWindow : Window
     {
+        private bool isPasswordVisible = false;
+        private bool isUpdatingPassword = false;
         public User? LoggedInUser { get; private set; }
         public LoginWindow()
         {
             InitializeComponent();
+        }
+
+        // toggle between PasswordBox and TextBox
+        private void PasswordEyeIcon_Click(object sender, MouseButtonEventArgs e)
+        {
+            isPasswordVisible = !isPasswordVisible;
+
+            if (isPasswordVisible)
+            {
+                // show plaintext
+                PasswordTextBox.Text = PasswordBox.Password;
+                PasswordBox.Visibility = Visibility.Collapsed;
+                PasswordTextBox.Visibility = Visibility.Visible;
+                PasswordTextBox.Focus();
+                PasswordTextBox.CaretIndex = PasswordTextBox.Text.Length;
+            }
+            else
+            {
+                // hide again
+                PasswordBox.Password = PasswordTextBox.Text;
+                PasswordTextBox.Visibility = Visibility.Collapsed;
+                PasswordBox.Visibility = Visibility.Visible;
+                PasswordBox.Focus();
+            }
+        }
+
+        // keep the two in sync when the real password changes
+        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (isUpdatingPassword || PasswordTextBox.Visibility != Visibility.Visible)
+                return;
+
+            isUpdatingPassword = true;
+            PasswordTextBox.Text = PasswordBox.Password;
+            isUpdatingPassword = false;
+        }
+
+        // keep the two in sync when the mirror TextBox changes
+        private void PasswordTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (isUpdatingPassword)
+                return;
+
+            isUpdatingPassword = true;
+            PasswordBox.Password = PasswordTextBox.Text;
+            isUpdatingPassword = false;
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
