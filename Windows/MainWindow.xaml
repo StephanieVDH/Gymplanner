@@ -88,12 +88,6 @@
                     </Style>
                 </ItemsControl.ItemContainerStyle>
 
-                <Button x:Name="AdminButton"
-                    Content="Admin TEST"
-                    Width="100"
-                    Margin="10,0,0,0"
-                    Click="AdminButton_Click"/>
-
                 <TextBlock Text="Make your personalised gym schedule in 5 min!"
                           FontSize="28"
                           FontStyle="Italic"

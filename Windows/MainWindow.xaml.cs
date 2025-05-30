@@ -63,14 +63,6 @@ namespace Gymplanner.Windows
             }
         }
 
-        private void AdminButton_Click(object sender, RoutedEventArgs e)
-        {
-            // Open as a standalone window
-            var admin = new AdminPage();
-            admin.Owner = this;    // optional: set owner so it stays on top
-            admin.Show();          // or admin.ShowDialog() if you want it modal
-        }
-
         private async void GetQuoteButton_Click(object sender, RoutedEventArgs e)
         {
             try
