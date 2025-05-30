@@ -100,7 +100,7 @@
                           Margin="0,10"/>
 
                 <Image Source="/Images/pick_up.jpg"
-                      Height="200"
+                      Height="237"
                       Stretch="UniformToFill"/>
 
                 <TextBlock Text="HOW IT WORKS"
@@ -193,9 +193,9 @@
 
         <!-- Footer  (icoontjes toevoegen)-->
         <DockPanel Grid.Row="2" Background="#F5E6FA" Height="40">
-            <TextBlock Text="nr.: 046567983     |     Mail: info@gymplanner.com"
+            <TextBlock Text="Gymplanner © 2025"
                       Foreground="White"
-                      VerticalAlignment="Stretch"
+                      VerticalAlignment="Center"
                       HorizontalAlignment="Center"
                       FontSize="14"/>
         </DockPanel>
