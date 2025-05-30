@@ -317,7 +317,6 @@ namespace Gymplanner.Windows
                     "Are you sure you want to delete your account?\n\n" +
                     "This will permanently deactivate your account and you will lose access to:\n" +
                     "• Your workout preferences\n" +
-                    "• Your workout history\n" +
                     "• Your profile data\n\n" +
                     "This action cannot be undone.",
                     "Confirm Account Deletion",
@@ -331,7 +330,7 @@ namespace Gymplanner.Windows
                 MessageBoxResult finalConfirm = MessageBox.Show(
                     $"This is your final confirmation.\n\n" +
                     $"Delete account for: {userProfile.User.Email}?\n\n" +
-                    "Type your username and click Yes to proceed.",
+                    "Click Yes to proceed.",
                     "FINAL CONFIRMATION",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Stop);

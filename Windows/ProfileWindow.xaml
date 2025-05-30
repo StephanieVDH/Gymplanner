@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Gymplanner.Windows"
         mc:Ignorable="d"
-        Title="Profile" Height="864" Width="800"
+        Title="Profile" Height="800" Width="800"
         WindowStartupLocation="CenterScreen">
 
     <!-- 1) Embed the default avatar as a pack URI -->

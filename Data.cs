@@ -61,38 +61,36 @@ namespace Gymplanner
         public Gymplanner.CS.User GetUserByEmailForProfile(string email)
         {
             Gymplanner.CS.User user = null;
-            string query = "SELECT id, username, email, created_at, updated_at FROM users WHERE email = @email";
+            string query = @"
+                SELECT 
+                    id,
+                    username,
+                    email,
+                    role_id,
+                    created_at,
+                    updated_at
+                FROM users
+                WHERE email = @email
+                LIMIT 1;
+            ";
 
-            try
+            using var connection = new MySqlConnection(connectionString);
+            connection.Open();
+            using var command = new MySqlCommand(query, connection);
+            command.Parameters.AddWithValue("@email", email);
+
+            using var reader = command.ExecuteReader();
+            if (reader.Read())
             {
-                using (var connection = new MySqlConnection(connectionString))
+                user = new Gymplanner.CS.User
                 {
-                    connection.Open();
-                    using (var command = new MySqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@email", email);
-
-                        using (var reader = command.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                user = new Gymplanner.CS.User
-                                {
-                                    Id = reader.GetInt32("id"),
-                                    Username = reader.GetString("username"),
-                                    Email = reader.GetString("email"),
-                                    CreatedAt = reader.GetDateTime("created_at"),
-                                    UpdatedAt = reader.GetDateTime("updated_at")
-                                };
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error getting user by email: {ex.Message}");
-                Console.WriteLine($"Error getting user by email: {ex.Message}");
+                    Id = reader.GetInt32("id"),
+                    Username = reader.GetString("username"),
+                    Email = reader.GetString("email"),
+                    RoleId = reader.GetInt32("role_id"),            // ← new!
+                    CreatedAt = reader.GetDateTime("created_at"),
+                    UpdatedAt = reader.GetDateTime("updated_at")
+                };
             }
 
             return user;
