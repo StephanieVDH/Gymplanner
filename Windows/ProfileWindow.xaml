@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Gymplanner.Windows"
         mc:Ignorable="d"
-        Title="Profile" Height="800" Width="800"
+        Title="Profile" Height="600" Width="800"
+        WindowStyle="SingleBorderWindow"
         WindowStartupLocation="CenterScreen">
 
     <!-- 1) Embed the default avatar as a pack URI -->
@@ -227,10 +228,15 @@
 
                         <!-- Admin Page Button -->
                         <Button x:Name="AdminPageBtn"
-                    Content="Admin Page"
-                    Width="100"
-                    Height="30"
-                    Margin="5,0,0,10"
+                    Content="ADMIN TOOLS"
+                    Background="#F4B6C2"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Padding="0,15"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    Margin="0,0,0,15"
+                    Cursor="Hand"          
                     Visibility="Collapsed"
                     Click="AdminPageBtn_Click"/>
 
