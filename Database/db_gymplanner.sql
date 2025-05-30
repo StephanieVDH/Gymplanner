@@ -14,21 +14,13 @@ CREATE TABLE users (
   username       VARCHAR(50)  NOT NULL UNIQUE,
   password_hash  VARCHAR(255) NOT NULL,
   email          VARCHAR(100) NOT NULL UNIQUE,
+  picture		 VARCHAR(255) NULL,
   role_id        INT          NOT NULL DEFAULT 2,
   created_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP 
                        ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (role_id) REFERENCES roles(id)
 );
-
-ALTER TABLE users 
-ADD COLUMN deleted_at DATETIME NULL 
-AFTER updated_at;
-
--- This helps when filtering active users (WHERE deleted_at IS NULL)
-CREATE INDEX idx_users_deleted_at ON users(deleted_at);
-
-
 
 -- 3. Goals & Fitness Levels
 CREATE TABLE goals (
@@ -58,7 +50,7 @@ CREATE TABLE user_preferences (
   available_days_per_week  INT NOT NULL,
   session_duration_minutes INT NOT NULL,
   created_at               DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id)  REFERENCES users(id),
+  FOREIGN KEY (user_id)  REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (goal_id)  REFERENCES goals(id),
   FOREIGN KEY (level_id) REFERENCES fitness_levels(id)
 );
@@ -112,7 +104,7 @@ CREATE TABLE schedules (
   id         INT AUTO_INCREMENT PRIMARY KEY,
   user_id    INT NOT NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- 8. Days Lookup
