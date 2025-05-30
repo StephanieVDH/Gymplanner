@@ -48,22 +48,33 @@
                      Height="30"
                      Margin="0,0,0,12" />
 
-            <!-- Password -->
+            <!-- Password with eye-toggle -->
             <TextBlock Text="PASSWORD"
-                       FontWeight="SemiBold"
-                       Margin="0,0,0,4" />
-            <PasswordBox Name="PasswordBox"
-                         Height="30"
-                         Margin="0,0,0,20" />
-
-            
-            <!-- Login Button -->
+                       FontWeight="SemiBold"/>
+            <Grid Height="30">
+                <!-- hidden by default -->
+                <TextBox   x:Name="PasswordTextBox"
+                           Visibility="Collapsed"
+                           TextChanged="PasswordTextBox_TextChanged"/>
+                <PasswordBox x:Name="PasswordBox"
+                             PasswordChanged="PasswordBox_PasswordChanged"/>
+                <Image Source="pack://application:,,,/Images/eye_icon.jpg"
+                       Cursor="Hand"
+                       Width="16" Height="16"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center"
+                       Margin="0,0,5,0"
+                       MouseDown="PasswordEyeIcon_Click"/>
+            </Grid>
             <Button Content="LOG IN"
-                    Height="40"
+                    Height="34"
                     Background="#FFDA44AA"
                     Foreground="White"
                     FontWeight="SemiBold"
+                    Margin="0,20,0,0"
                     Click="LoginButton_Click" />
+
+            <!-- Login Button -->
         </StackPanel>
         <Image Source="/Images/Gymplanner_cropped.jpg"
                Width="100"

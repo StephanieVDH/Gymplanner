@@ -1,7 +1,12 @@
 ﻿<Window x:Class="Gymplanner.Windows.AdminPage"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:Gymplanner.Windows"
         Title="Admin Page" Height="600" Width="900">
+    <Window.Resources>
+        <local:PathToImageConverter x:Key="PathToImageConverter"/>
+    </Window.Resources>
     <Grid Margin="10">
         <TabControl>
 
@@ -45,25 +50,37 @@
 
                                         <!-- Avatar -->
                                         <Border Width="40"
-                            Height="40"
-                            CornerRadius="20"
-                            Background="#EEE"
-                            Margin="20,0"
-                            DockPanel.Dock="Left">
-                                            <Image Source="/Images/avatar.png" Stretch="Uniform"/>
+                                              Height="40"
+                                              CornerRadius="20"
+                                              Background="#EEE"
+                                              Margin="20,0"
+                                              DockPanel.Dock="Left">
+                                            <Image Stretch="Uniform"
+                                                Source="{Binding Picture,
+                                                Converter={StaticResource PathToImageConverter}}"/>
                                         </Border>
 
                                         <!-- Actions -->
                                         <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Right"
                                 DockPanel.Dock="Right">
-                                            <Button Content="Edit user"
+                                            <Button Content="Edit"
+                              Width="80"
+                              Height="30"
                               Padding="8,4"
                               Margin="0,0,10,0"
+                              Background="#F4B6C2"
+                              Foreground="White"
+                              BorderThickness="0"
                               Click="EditUserButton_Click"
                               CommandParameter="{Binding}"/>
-                                            <Button Content="Delete user"
+                                            <Button Content="Delete"
+                              Width="80"
+                              Height="30"
                               Padding="8,4"
+                              Background="#D6434F"
+                              Foreground="White"
+                              BorderThickness="0"
                               Click="DeleteUserButton_Click"
                               CommandParameter="{Binding}"/>
                                         </StackPanel>
@@ -133,13 +150,22 @@
                                         <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Right"
                                 DockPanel.Dock="Right">
-                                            <Button Content="Edit exercise"
+                                            <Button Content="Edit"
+                              Width="80" Height="30"
                               Padding="8,4"
                               Margin="0,0,10,0"
+                              Background="#F4B6C2"
+                              Foreground="White"
+                              BorderThickness="0"
                               Click="EditExerciseButton_Click"
                               CommandParameter="{Binding}"/>
-                                            <Button Content="Delete exercise"
+
+                                            <Button Content="Delete"
+                              Width="80" Height="30"
                               Padding="8,4"
+                              Background="#D6434F"
+                              Foreground="White"
+                              BorderThickness="0"
                               Click="DeleteExerciseButton_Click"
                               CommandParameter="{Binding}"/>
                                         </StackPanel>

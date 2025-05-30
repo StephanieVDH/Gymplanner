@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media.Imaging;
 using Gymplanner.CS;     // Exercise, User, DifficultyLevel, MuscleGroup
 
 namespace Gymplanner.Windows
@@ -182,5 +184,32 @@ namespace Gymplanner.Windows
         }
 
         #endregion
+    }
+    public class PathToImageConverter : IValueConverter
+    {
+        // value will be your PhotoPath string
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var path = value as string;
+            if (string.IsNullOrWhiteSpace(path))
+                return new BitmapImage(new Uri("/Images/avatar.png", UriKind.Relative));
+
+            try
+            {
+                // if it's a local file path:
+                var uri = path.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                          ? new Uri(path, UriKind.Absolute)
+                          : new Uri(path, UriKind.Absolute);
+                return new BitmapImage(uri);
+            }
+            catch
+            {
+                // on error fall back
+                return new BitmapImage(new Uri("/Images/avatar.png", UriKind.Relative));
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            => throw new NotSupportedException();
     }
 }

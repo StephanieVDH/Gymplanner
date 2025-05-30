@@ -33,8 +33,19 @@ namespace Gymplanner.Windows
             LoadUserProfile(user);
             DataContext = userProfile;
             LoadCurrentPicture();
+
+            // Show AdminPage button only for role_id == 1
+            if (userProfile?.User?.RoleId == 1)
+                AdminPageBtn.Visibility = Visibility.Visible;
+            else
+                AdminPageBtn.Visibility = Visibility.Collapsed;
         }
 
+        private void AdminPageBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var admin = new AdminPage { Owner = this };
+            admin.Show();
+        }
 
         private void LoadUserProfile(User user)
         {
@@ -138,33 +149,22 @@ namespace Gymplanner.Windows
 
         private void LoadCurrentPicture()
         {
-            // 1) fetch the *relative* path from the DB
+            // 1) Start with the default embedded brush
+            ProfileImageEllips.Fill = (Brush)FindResource("DefaultAvatarBrush");
+
+            // 2) Fetch the relative picture path from DB
             var rel = data.GetUserProfilePicture(userProfile.User.Id);
-            // 2) decide which file on disk to load
-            string fileOnDisk;
-            if (!string.IsNullOrEmpty(rel))
-            {
-                // eg: bin/Debug/Images/ProfilePics/123.png
-                fileOnDisk = IOPath.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory,
-                    rel
-                );
-            }
-            else
-            {
-                // your default avatar (already copied in /Images)
-                fileOnDisk = IOPath.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory,
-                    "Images",
-                    "avatar.png"
-                );
-            }
-            // 3) point the brush at that absolute file
-            ProfileImageBrush.ImageSource = new BitmapImage(
-                new Uri(fileOnDisk, UriKind.Absolute)
-            );
-            // 4) keep your VM in sync (if you’re using it elsewhere)
-            userProfile.Picture = rel;
+            if (string.IsNullOrEmpty(rel))
+                return;  // no custom pic, stick with default
+
+            // 3) Build absolute disk path
+            var absolute = IOPath.Combine(AppDomain.CurrentDomain.BaseDirectory, rel);
+            if (!File.Exists(absolute))
+                return;  // file missing, still use default
+
+            // 4) Load and apply the custom image
+            var bmp = new BitmapImage(new Uri(absolute, UriKind.Absolute));
+            ProfileImageEllips.Fill = new ImageBrush(bmp);
         }
 
         private void UploadPictureBtn_Click(object sender, RoutedEventArgs e)
@@ -193,7 +193,6 @@ namespace Gymplanner.Windows
             File.Copy(dlg.FileName, destPath, overwrite: true);
 
             // 4) Persist the *relative* path in the DB
-            //    e.g. "Images/ProfilePics/1234.png"
             var relativePath = IOPath.Combine("Images", "ProfilePics", filename);
             var success = data.UpdateUserProfilePicture(
                 userProfile.User.Id,
@@ -202,41 +201,35 @@ namespace Gymplanner.Windows
 
             if (!success)
             {
-                MessageBox.Show(
-                    "Failed to save your picture. Please try again.",
-                    "Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error
-                );
+                MessageBox.Show("Failed to save your picture. Please try again.",
+                                "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            // 5) Update the VM so any other bindings stay in sync
+            // 5) Update the VM so any bindings stay in sync
             userProfile.Picture = relativePath;
 
-            // 6) Update the circle immediately by pointing your ImageBrush
+            // 6) Update the Ellipse Fill directly
             try
             {
                 var absolutePath = IOPath.Combine(
                     AppDomain.CurrentDomain.BaseDirectory,
                     relativePath
                 );
-                ProfileImageBrush.ImageSource = new BitmapImage(
-                    new Uri(absolutePath, UriKind.Absolute)
-                );
+                // create a new ImageBrush and assign
+                var brush = new ImageBrush(
+                    new BitmapImage(new Uri(absolutePath, UriKind.Absolute))
+                )
+                {
+                    Stretch = Stretch.UniformToFill
+                };
+                ProfileImageEllips.Fill = brush;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error setting profile image brush: {ex}");
-                // fallback to default avatar if something goes awry
-                var defaultPath = IOPath.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory,
-                    "Images",
-                    "avatar.png"
-                );
-                ProfileImageBrush.ImageSource = new BitmapImage(
-                    new Uri(defaultPath, UriKind.Absolute)
-                );
+                Debug.WriteLine($"Error setting profile image: {ex}");
+                // fallback to embedded default
+                ProfileImageEllips.Fill = (Brush)FindResource("DefaultAvatarBrush");
             }
         }
 
@@ -324,7 +317,6 @@ namespace Gymplanner.Windows
                     "Are you sure you want to delete your account?\n\n" +
                     "This will permanently deactivate your account and you will lose access to:\n" +
                     "• Your workout preferences\n" +
-                    "• Your workout history\n" +
                     "• Your profile data\n\n" +
                     "This action cannot be undone.",
                     "Confirm Account Deletion",
@@ -338,7 +330,7 @@ namespace Gymplanner.Windows
                 MessageBoxResult finalConfirm = MessageBox.Show(
                     $"This is your final confirmation.\n\n" +
                     $"Delete account for: {userProfile.User.Email}?\n\n" +
-                    "Type your username and click Yes to proceed.",
+                    "Click Yes to proceed.",
                     "FINAL CONFIRMATION",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Stop);

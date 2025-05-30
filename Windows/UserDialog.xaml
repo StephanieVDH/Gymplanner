@@ -38,10 +38,7 @@
         <PasswordBox Grid.Row="2" Grid.Column="1" x:Name="PasswordBox" Margin="5"/>
 
         <Label Grid.Row="3" Grid.Column="0" Content="Role:" VerticalAlignment="Center"/>
-        <ComboBox Grid.Row="3" Grid.Column="1" x:Name="RoleComboBox" Margin="5">
-            <ComboBoxItem Content="admin"/>
-            <ComboBoxItem Content="user"/>
-        </ComboBox>
+        <ComboBox Grid.Row="3" Grid.Column="1" x:Name="RoleComboBox" Margin="5"/>
 
         <StackPanel Grid.Row="4" Grid.Column="1"
                     Orientation="Horizontal"

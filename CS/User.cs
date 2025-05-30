@@ -16,6 +16,7 @@ namespace Gymplanner.CS
         public string PasswordHash { get; set; }
         //public DateOnly? DateOfBirth { get; set; }
         public string Role { get; set; }
+        public int RoleId { get; set; }
         public string Picture { get; set; }
         public DateTime UpdatedAt { get; set; }
 
